@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 require('../models/Case');
 const Case = mongoose.model('Case');
 
-require('../models/Hospital');
-const Hospital = mongoose.model('Hospital');
+require('../models/Unit');
+const Unit = mongoose.model('Unit');
 
 require('../models/History')
 const History = mongoose.model('History')
@@ -558,7 +558,7 @@ async function importCases (raw_payload, author, pre, callback) {
 
   let promise = Promise.resolve()
 
-  const refHospitals = await Hospital.find()
+  const refHospitals = await Unit.find({unit_type: 'rumahsakit'})
   
   /**
    * # The method used temporarily

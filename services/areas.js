@@ -3,13 +3,13 @@ const mongoose = require('mongoose')
 require('../models/DistrictCity')
 require('../models/SubDistrict')
 require('../models/Village')
-require('../models/Hospital')
+require('../models/Unit')
 require('../models/Lab')
 
 const Districtcity = mongoose.model('Districtcity')
 const SubDistrict = mongoose.model('SubDistrict')
 const Village = mongoose.model('Village')
-const Hospital = mongoose.model('Hospital')
+const Unit = mongoose.model('Unit')
 const Lab = mongoose.model('Lab')
 
 
@@ -104,7 +104,7 @@ function getHospital(query, callback) {
     params.rs_jabar = query.rs_jabar === 'true'
   }
 
-  Hospital.find(params)
+  Unit.find(Object.assign(params, {unit_type: 'rumahsakit'}))
       .exec()
       .then(hsp => {
           let res = hsp.map(q => q.toJSONFor())

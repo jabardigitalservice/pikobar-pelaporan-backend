@@ -27,7 +27,7 @@ const HistorySchema = new mongoose.Schema({
     // current_location mandatory ketika pilih PDP atau Positif, option ketika ODP -> lokasi saat ini
     current_location_type: String,  // RS / RUMAH
     // nama rumah sakit kalau di rumah sakit, nama kecamatan kalau di tempat tinggal
-    current_hospital_id : { type: mongoose.Schema.Types.ObjectId, ref: 'Hospital'},
+    current_hospital_id : { type: mongoose.Schema.Types.ObjectId, ref: 'Unit'},
     current_location_address: String, // or Number?
     current_location_village_code : String,
     current_location_subdistrict_code : String, //kecamatan

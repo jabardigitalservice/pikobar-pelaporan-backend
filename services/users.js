@@ -1,9 +1,9 @@
 require('../models/User');
-require('../models/Hospital');
+require('../models/Unit');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const User = mongoose.model('User');
-const Hospital = mongoose.model('Hospital');
+const Unit = mongoose.model('Unit');
 const Check = require('../helpers/rolecheck');
 const Helper = require('../helpers/custom');
 
@@ -112,7 +112,7 @@ const getFaskesOfUser = async (user, callback) => {
       let err = { message: "This user has no faskes data ascociated with it" }
       callback(err, null)
   } else {
-      const res = await Hospital.find(user.faskes_id)
+      const res = await Unit.find(user.faskes_id)
 
       callback(null, res)
   }
