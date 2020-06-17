@@ -63,6 +63,16 @@ module.exports = (server) =>{
                 pre: [ CheckRoleDelete ],
             },
             handler: handlers.deleteUnit
+        },
+        {
+            method: 'GET',
+            path: '/unit/hospital-unit-migrate',
+            config: {
+                auth: 'jwt',
+                description: 'migrate hospital unit',
+                tags: ['api', 'unit'],
+            },
+            handler: handlers.hospitalUnitMigrate
         }
     ]
 

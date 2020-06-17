@@ -84,6 +84,44 @@ const updateUnit = async (pay, id, category, author, callback) => {
     }
 }
 
+const migrate = async (payload, user, callback) => {    
+    require('../models/Hospital');
+    const Hospital = mongoose.model('Hospital');
+    const ObjectId = require("mongoose").Types.ObjectId
+    try {
+        let hosp = {}
+        let insertUnitRsPayload = {}
+        let insertUnitRsPayloads = []
+        const deleteResult = await Unit.deleteMany({unit_type: 'rumahsakit'})
+        console.log('delete', deleteResult)
+        const hospitals = await Hospital.find({})
+        for (i in hospitals) {
+            hosp = hospitals[i]
+            insertUnitRsPayload = {
+                _id: ObjectId(hosp._id),
+                unit_level: 3,
+                unit_code: null, //null sementara
+                unit_type: 'rumahsakit', //puskesmas, rs, klinik
+                name: hosp.name || '',
+                description: hosp.description || '',
+                address: hosp.address || '',
+                phone_numbers: hosp.phone_numbers.toString() || '',
+                kemendagri_kabupaten_kode: hosp.kemendagri_kabupaten_kode || null,
+                kemendagri_kecamatan_kode: hosp.kemendagri_kecamatan_kode || null,
+                kemendagri_kelurahan_kode: hosp.kemendagri_kelurahan_kode || null,
+                rs_jabar: hosp.rs_jabar ? true : false
+            }
+            insertUnitRsPayloads.push(insertUnitRsPayload)
+        }
+        console.log(insertUnitRsPayloads.length)
+        const result = await Unit.insertMany(insertUnitRsPayloads)
+        // console.log('insertMany', result)
+        callback(null, result);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
 module.exports = [
     {
         name: 'services.unit.create',
@@ -100,6 +138,10 @@ module.exports = [
     {
         name: 'services.unit.readbyid',
         method: listUnitById
+    },
+    {
+        name: 'services.unit.migrate',
+        method: migrate
     },
 ];
 

@@ -69,5 +69,16 @@ module.exports = (server) => {
                 }
             )
         },
+        async hospitalUnitMigrate(request,reply){
+            server.methods.services.unit.migrate(request.payload,
+                request.auth.credentials.user,
+                (err, result) => {
+                if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
+                return reply(
+                    constructUnitResponse(result,request)
+                ).code(200)
+                }
+            )
+        },
     };
 }
