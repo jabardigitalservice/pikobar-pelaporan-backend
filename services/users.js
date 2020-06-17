@@ -206,6 +206,43 @@ const listUserIds = async (user, query, callback) => {
   }
 }
 
+const DoMappingUsersUnit = async (user, query, callback) => {
+  const debug = false
+  const ObjectId = require("mongoose").Types.ObjectId
+  var stringSimilarity = require('string-similarity');
+
+  try {
+    const users = await User.find({role: 'faskes'}).select(['_id', 'fullname'])
+    const units = await Unit.find({unit_type: 'rumahsakit'}).select(['_id', 'name'])
+    stringUnits = units.map(obj => obj.name)
+
+    for (i in users) {
+      let user = users[i]
+      let matches = stringSimilarity.findBestMatch(user.fullname.toUpperCase(), stringUnits);
+      if (matches && matches.bestMatch) {
+        if (matches.bestMatch.rating > 0.7) {
+          let findUnit = units.find(x => x.name === matches.bestMatch.target)
+          if (findUnit) {
+            let res = await User.findOneAndUpdate({_id: user._id}, {
+              $set: { unit_id: new ObjectId(findUnit._id) }
+            })
+            if (debug) {
+              console.log('cari', user.fullname.toUpperCase())
+              console.log(matches.bestMatch)
+              console.log(res)
+            }
+          }
+        }
+      } 
+    }
+
+    return callback(null, [])
+  } catch (err) {
+    console.log(err)
+    callback(err, null)
+  }
+}
+
 const updateUsersFcmToken = async (id, payload, author, callback) =>{
   try {
     const params = { fcm_token: payload.fcm_token }
@@ -257,6 +294,10 @@ module.exports = [
   {
     name: 'services.users.getFaskesOfUser',
     method: getFaskesOfUser
+  },
+  {
+    name: 'services.users.DoMappingUsersUnit',
+    method: DoMappingUsersUnit
   }
 ];
  

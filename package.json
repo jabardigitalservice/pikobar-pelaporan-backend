@@ -59,6 +59,7 @@
     "pdfmake": "^0.1.65",
     "pusher": "^3.0.1",
     "slug": "^2.1.1",
+    "string-similarity": "^4.0.1",
     "url-crypt": "^1.2.1"
   },
   "devDependencies": {

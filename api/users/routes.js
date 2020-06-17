@@ -219,5 +219,19 @@ module.exports = (server) => {
       },
       handler: handlers.getUserNotification
     },
+    // Get user notifications detail
+    {
+      method: 'GET',
+      path: '/mapping-users-unit',
+      config: {
+        auth: 'jwt',
+        description: 'Do mapping users unit',
+        tags: ['api', 'users'],
+          pre: [
+            CheckRoleView
+          ]
+      },
+      handler: handlers.DoMappingUsersUnit
+    },
   ]
 }

@@ -225,6 +225,19 @@ module.exports = (server) => {
         if (err) return reply(replyHelper.constructErrorResponse(err)).code(422);
         return reply(constructUsersResponse(res));
       });
-    }
+    },
+    /**
+     * GET /api/users
+     * @param {*} request
+     * @param {*} reply
+     */
+    async DoMappingUsersUnit (request, reply) {
+      server.methods.services.users.DoMappingUsersUnit(
+        request.auth.credentials.user,
+        request.query, (err, listUser) => {
+        if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
+        return reply(constructUsersResponse(listUser))
+      })
+    },
   }
 }
