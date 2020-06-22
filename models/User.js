@@ -50,8 +50,9 @@ UserSchema.methods.setPassword = function (password) {
 UserSchema.methods.generateJWT = function () {
   const today = new Date();
   const exp = new Date(today);
-  exp.setDate(today.getDate() + 60);
-
+  exp.setDate(today.getDate());
+  exp.setMinutes(today.getMinutes() +9600); // set expires to 8 work hours 
+  
   return jwt.sign({
     id: this._id,
     username: this.username,
