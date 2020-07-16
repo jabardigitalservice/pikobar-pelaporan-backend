@@ -4,7 +4,6 @@ require('../models/History');
 require('../models/Case');
 
 const Helper = require('../helpers/custom');
-const { object } = require('joi');
 const History = mongoose.model('History');
 const Case = mongoose.model('Case');
 
@@ -75,14 +74,16 @@ function createHistoryIfChanged (payload, callback) {
       function is_same(a,b) {
         /* Method to compare equality between 2 object. support Date object,
          * array, and generic object */
+        //if a undefine then false
         if (typeof a == 'undefined' || typeof b == 'undefined')
           return false;
-        if (a instanceof Date)
-          return a.getTime() == b.getTime();
+        // if a is array value
         if (Array.isArray(a))
           return JSON.stringify(a) == JSON.stringify(b);
+        //if a is value object
         if (typeof(a) == 'object')
           return String(a) == String(b);
+        //if a is basic value
         return a == b;
       }
 
@@ -92,7 +93,7 @@ function createHistoryIfChanged (payload, callback) {
             changed_fields.push(property);
           }
       }
-      
+
       if (changed) {
         new_history.save((err, item) => {
           if (err) return callback(err, null);
@@ -160,14 +161,16 @@ function createHistoryFromInputTest(payload, callback){
       function is_same(a,b) {
         /* Method to compare equality between 2 object. support Date object,
          * array, and generic object */
+        //if a undefine then false
         if (typeof a == 'undefined' || typeof b == 'undefined')
           return false;
-        if (a instanceof Date)
-          return a.getTime() == b.getTime();
+        // if a is array value
         if (Array.isArray(a))
           return JSON.stringify(a) == JSON.stringify(b);
+        //if a is value object
         if (typeof(a) == 'object')
           return String(a) == String(b);
+        //if a is basic value
         return a == b;
       }
 

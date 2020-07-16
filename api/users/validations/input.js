@@ -26,7 +26,7 @@ const RegisterPayload = {
     password: Joi.string().required(),
     role: Joi.string().required(),
     name_district_city: Joi.string().required().allow(null, '').default(null),
-    code_district_city: Joi.number().required().allow(null, '').default(null),
+    code_district_city: Joi.string().required().allow(null, '').default(null),
     phone_number: Joi.string().required().allow(null, '').default(null),
     address_street: Joi.string().required().allow(null, '').default(null),
     address_subdistrict_code: Joi.string().required().allow(null, '').default(null),
