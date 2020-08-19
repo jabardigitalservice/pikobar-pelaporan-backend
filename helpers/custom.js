@@ -1,4 +1,5 @@
-'use strict';
+'use strict'
+const { PATIENT_STATUS, CRITERIA } = require('./constant')
 const setPwd = (payload) => {
     const crypto = require('crypto');
     payload.salt = crypto.randomBytes(16).toString('hex');
@@ -62,7 +63,74 @@ const isDirty = (oldData, newData) => {
     return result
 }
 
+const criteriaConvert = (res) => {
+  let criteria
+  if (res.status === CRITERIA.CONF) {
+    criteria = 'Konfirmasi'
+  } else if (res.status === CRITERIA.PROB) {
+    criteria = 'Probable'
+  } else if (res.status === CRITERIA.SUS) {
+    criteria = 'Suspek'
+  } else if (res.status === CRITERIA.CLOSE) {
+    criteria = 'Kontak Erat'
+  } else {
+    criteria = ''
+  }
+
+  return criteria
+}
+
+const convertYesOrNO = (param) => {
+  let result
+  if (param === 1) {
+    result = 'Ya'
+  } else if (param === 2) {
+    result = 'Tidak'
+  } else if (param === 3) {
+    result = 'Tidak Tahu'
+  } else {
+    result = ''
+  }
+
+  return result
+}
+
+const convertIncome = (param) => {
+  let result
+  if (param === 0) {
+    result = 'Tidak ber penghasilan'
+  } else if (param === 1) {
+    result = '< 1juta'
+  } else if (param === 2) {
+    result = '1 s/d 3 juta'
+  } else if (param === 3) {
+    result = '3 s/d 5 juta'
+  } else if (param === 4) {
+    result = '> 5juta'
+  } else {
+    result = ''
+  }
+
+  return result
+}
+
+const convertPysichal = (param) => {
+  let result
+  if (param === 0) {
+    result = 'Sedenter'
+  } else if (param === 1) {
+    result = 'Latihan fisik < 150 menit'
+  } else if (param === 2) {
+    result = 'Latihan fisik > 150 menit'
+  } else {
+    result = ''
+  }
+
+  return result
+}
+
 module.exports = {
-    setPwd, deletedSave, isObject, deleteProps, jsonParse,
-    convertDate, isDirty
+  setPwd, deletedSave, isObject, deleteProps, jsonParse,
+  convertDate, isDirty, patientStatus, criteriaConvert, convertYesOrNO,
+  convertIncome, convertPysichal
 }

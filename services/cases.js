@@ -1,31 +1,15 @@
-const mongoose = require('mongoose');
-
-require('../models/Case');
-const Case = mongoose.model('Case');
-
-require('../models/Unit');
-const Unit = mongoose.model('Unit');
-
-require('../models/History')
-const History = mongoose.model('History')
-
-require('../models/User')
-const User = mongoose.model('User')
-
-require('../models/Notification')
-const Notification = mongoose.model('Notification')
-
-require('../models/CaseTransfer')
-const CaseTransfer = mongoose.model('CaseTransfer')
-
-require('../models/DistrictCity')
-const DistrictCity = mongoose.model('Districtcity')
-const ObjectId = require('mongoose').Types.ObjectId;
+const Case = require('../models/Case');
+const Unit =require('../models/Unit')
+const History = require('../models/History')
+const User = require('../models/User')
+const Notification = require('../models/Notification')
+const DistrictCity = require('../models/DistrictCity')
 const Check = require('../helpers/rolecheck')
 const Notif = require('../helpers/notification')
-const Helper = require('../helpers/custom')
+const Filter = require('../helpers/filter/casefilter')
 const CloseContact = require('../models/CloseContact')
-const moment = require('moment');
+const { sqlCondition, excellOutput } = require('../helpers/filter/exportfilter')
+const moment = require('moment')
 
 async function ListCase (query, user, callback) {
 
@@ -126,55 +110,28 @@ async function ListCase (query, user, callback) {
   }).catch(err => callback(err, null))
 }
 
-function listCaseExport (query, user, callback) {
-  const params = {}
-
-  if(query.start_date && query.end_date){
-    params.createdAt = {
-      "$gte": new Date(new Date(query.start_date)).setHours(00, 00, 00),
-      "$lt": new Date(new Date(query.end_date)).setHours(23, 59, 59)
-    }
-  }
-
-  Check.exportByRole(params,user,query)
-
-  if(query.status){
-    params.status = query.status;
-  }
-  if(query.final_result){
-    params.final_result = query.final_result;
-  }
-  if(user.role == "dinkesprov" || user.role == "superadmin"){
-    if(query.address_district_code){
-      params.address_district_code = query.address_district_code;
-    }
-  }
-  if(query.address_village_code){
-    params.address_village_code = query.address_village_code;
-  }
-  if(query.address_subdistrict_code){
-    params.address_subdistrict_code = query.address_subdistrict_code;
-  }
-  if (query.verified_status && query.verified_status.split) {
-    params.verified_status = { $in: query.verified_status.split(',') }
-  }
+const listCaseExport = async (query, user, callback) => {
+  const filter = await Filter.filterCase(user, query)
+  const filterRole = Check.exportByRole({}, user, query)
+  const params = { ...filter, ...filterRole }
+  let search
   if(query.search){
-    var search_params = [
+    let search_params = [
       { id_case : new RegExp(query.search,"i") },
       { name: new RegExp(query.search, "i") },
     ];
-    var search = search_params
+    search = search_params
   } else {
-    var search = {}
+    search = {}
   }
   params.last_history = { $exists: true, $ne: null }
-  Case.find(params)
-    .where('delete_status').ne('deleted')
-    .or(search)
-    .populate('author').populate('last_history')
-    .exec()
-    .then(cases => callback (null, cases.map(cases => cases.JSONExcellOutput())))
-    .catch(err => callback(err, null));
+  const condition = sqlCondition(params, search)
+  try {
+    const resultExport = await Case.aggregate(condition)
+    callback (null, resultExport.map(cases => excellOutput(cases)))
+  } catch (error) {
+    callback(error, null)
+  }
 }
 
 function getCaseById (id, callback) {

@@ -29,7 +29,11 @@ module.exports = {
   },
   GENDER: {
     MALE: 'L',
-    FEMALE: 'P'
+    FEMALE: 'P',
+    M: 'male',
+    F: 'female',
+    INDO_L: 'Laki-Laki',
+    INDO_P: 'Perempuan'
   },
   DEFAULT_PROVINCE: {
     CODE: '32',
