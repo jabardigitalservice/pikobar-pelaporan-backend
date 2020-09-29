@@ -3,7 +3,7 @@ const components = {
 }
 
 const render = (data) => {
-  
+
   const buildContactPlaces = (data) => {
     let closeContacts = [], closeContactsDoc = []
     for (i in data.closeContacts) {
@@ -22,17 +22,9 @@ const render = (data) => {
     }
 
     if (!closeContacts.length) {
-      for (let i = 0;  i < 2; i++) {
-        closeContactsDoc.push([
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
-        ])
-      }
+      closeContactsDoc.push([
+        { alignment: 'center', text: '- Tidak ada kontak erat -', colSpan: 7 },{},{},{},{},{},{},
+      ])
     }
 
     return closeContactsDoc
@@ -43,7 +35,7 @@ const render = (data) => {
       style: 'tableClinical',
       color: '#444',
       table: {
-        widths: [105, 25, 17, 70, 85, 70, 83],
+        widths: [85, 25, 17, 60, 75, 70, 123],
         headerRows: 1,
         body: [
           [

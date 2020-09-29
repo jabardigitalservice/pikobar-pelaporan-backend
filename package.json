@@ -9,8 +9,8 @@
   "main": "server.js",
   "scripts": {
     "test": "./node_modules/lab/bin/lab -v",
-    "start": "node --max-old-space-size=2048 server.js",
-    "start:server": "nodemon server.js"
+    "start": "npm-run-all --parallel start:server",
+    "start:server": "nodemon --max-old-space-size=2048 --legacy-watch server.js"
   },
   "author": "Sandi Sunandar",
   "homepage": "https://github.com/jabardigitalservice/pikobar-pelaporan-backend#readme",
@@ -30,7 +30,7 @@
     "@sentry/node": "^5.15.5",
     "ajv": "^6.12.2",
     "ajv-keywords": "^3.5.0",
-    "bcrypt": "^3.0.8",
+    "bcrypt": "^5.0.0",
     "bluebird": "^3.7.2",
     "boom": "^7.3.0",
     "crypto": "^1.0.1",
@@ -66,7 +66,7 @@
     "blipp": "^2.3.0",
     "code": "^4.1.0",
     "lab": "^14.1.0",
-    "nodemon": "^1.11.0",
+    "nodemon": "^2.0.4",
     "npm-run-all": "^4.0.2"
   },
   "engines": {

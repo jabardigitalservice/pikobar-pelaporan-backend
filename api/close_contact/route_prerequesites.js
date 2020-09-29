@@ -57,7 +57,7 @@ const districtInputScope = server => {
                     message: 'Anda tidak dapat melakukan input Kontak Erat di luar wilayah anda.!',
                     data: null
                 }).code(422).takeover()
-            } 
+            }
         },
         assign: 'district_input_scope'
     }
@@ -66,5 +66,5 @@ const districtInputScope = server => {
 module.exports = {
     getCasebyId,
     getCloseContactbyId,
-    districtInputScope
+    districtInputScope,
 }

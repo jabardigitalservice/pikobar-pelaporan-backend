@@ -5,7 +5,7 @@ module.exports = (server) =>{
     const getCaseById = require('./route_prerequesites').getCasebyId(server)
     const getCloseContactbyId = require('./route_prerequesites').getCloseContactbyId(server)
     // const districtInputScope = require('./route_prerequesites').districtInputScope(server)
-
+    // THIS FILE TODO DELETED
     return [
         {
             method: 'GET',

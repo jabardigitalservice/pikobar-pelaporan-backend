@@ -1,77 +1,148 @@
+const moment = require('moment')
+const {
+  CRITERIA
+} = require('../../../constant')
 const render = (data) => {
 
   const isTrue = (value) => {
-    return data.last_history[value] ? '√' : '  '
+    return data[value] ? '√' : '  '
   }
-  
+
   const isFalse = (value) => {
-    return !data.last_history[value] ? '√' : '  '
+    return !data[value] ? '√' : '  '
   }
 
-  const market = data.close_contact_animal_market
-  const faskes = data.close_contact_medical_facility
-  const isVisited = (value, n) => {
-    return value == n ? '√' : '  '
+  const formattedDate = (d) => {
+    return d ? moment(d).format('YYYY/MM/DD') : '-'
   }
 
-  const buildVisitedPlaces = (place) => {
-    let visitedPlaces = [], visitedPlacesDoc = []
-    for (i in data.histories) {
-      const visitedPlace = data.histories[i][place]
-      if (visitedPlaces.includes(visitedPlace) || !visitedPlace) continue
+  const buildTravelPlaces = (place, type) => {
+    let res = []
 
-      visitedPlaces.push(visitedPlace)
-      visitedPlacesDoc.push([
-          { text: visitedPlace },
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
+    const records = data[place] || []
+
+    const exception = type === 'domestic'
+      ? 'Dari Luar Negeri'
+      : 'Dari Luar Kota'
+
+    for (i in records) {
+      const rec = records[i]
+
+      if (rec.travelling_type === exception) continue
+
+      res.push([
+          { alignment: 'center', text: rec.travelling_visited || '-' },
+          { alignment: 'center', text: rec.travelling_city || '-' },
+          { alignment: 'center', text: formattedDate(rec.travelling_date) },
+          { alignment: 'center', text: formattedDate(rec.travelling_arrive) },
       ])
     }
 
-    if (!visitedPlaces.length) {
-      for (let i = 0;  i < 2; i++) {
-        visitedPlacesDoc.push([
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
+    if (!res.length) {
+      res.push([
+        { alignment: 'center', text: '- Tidak ada riwayat -', colSpan: 4 },{},{},{},
       ])
-      }
     }
 
-    return visitedPlacesDoc
+    return res
   }
 
   const buildResidences = () => {
-    let residences = [], residencesDoc = []
-    if (!residences.length) {
-      for (let i = 0;  i < 2; i++) {
-        residencesDoc.push([
-          { text: '-', colSpan: 2 },{},
-          { text: '-', colSpan: 2 },{},
+    let res = []
+
+    const records = data.visited_local_area || []
+
+    for (i in records) {
+      const rec = records[i]
+      res.push([
+          { alignment: 'center', colSpan: 2, text: rec.visited_local_area_province || '-' },{},
+          { alignment: 'center', colSpan: 2, text: rec.visited_local_area_city || '-' },{}
       ])
-      }
     }
 
-    return residencesDoc
+    if (!res.length) {
+      res.push([
+        { alignment: 'center', text: '- Tidak ada riwayat -', colSpan: 4 },{},{},{},
+      ])
+    }
+
+    return res
   }
 
-  const buildSuspectContact = () => {
-    let suspects = [], suspectsDoc = []
-    if (!suspects.length) {
-      for (let i = 0;  i < 2; i++) {
-        suspectsDoc.push([
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
-          { text: '-' }
-      ])
-      }
+  const travelType = (type) => {
+    let res = false
+    let records = data
+    if (!records) {
+      return false
     }
 
-    return suspectsDoc
+    records = records.travelling_history
+    if (!records || !records.length) {
+      return false
+    }
+
+    type = type === 'INTL'
+      ? 'Dari Luar Negeri'
+      : 'Dari Luar Kota'
+
+    records.forEach(v => {
+      if (v.travelling_type === type) {
+        res = true
+      }
+    })
+
+    return res
+  }
+
+  const suspectContact = (criterias) => {
+    let res = false
+    let records = data
+    if (!records) {
+      return false
+    }
+
+    records = records.close_contact_premier
+    if (!records || !records.length) {
+      return false
+    }
+
+    records.forEach(v => {
+      if (criterias.includes(v.close_contact_criteria)) {
+        res = true
+      }
+    })
+
+    return res
+  }
+
+  const buildSuspectContact = (criterias) => {
+    let res = []
+
+    let records = []
+    if (data && data.close_contact_premier) {
+      records = data.close_contact_premier
+    }
+
+    for (i in records) {
+      const rec = records[i]
+      if (!criterias.includes(rec.close_contact_criteria)) continue
+
+      res.push([
+          { alignment: 'left', text: rec.close_contact_name || '-' },
+          { alignment: 'left', text: rec.close_contact_address_street || '-' },
+          { alignment: 'center', text: rec.close_contact_relation || '-' },
+          { alignment: 'center', text: formattedDate(rec.close_contact_first_date) },
+          { alignment: 'center', text: formattedDate(rec.close_contact_last_date) },
+      ])
+    }
+
+    if (!res.length) {
+      res.push([
+        { alignment: 'center', text: '- Tidak ada riwayat -', colSpan: 5 },{},{},{},{},
+      ])
+    }
+
+    return res
   }
 
   return [
@@ -100,7 +171,7 @@ const render = (data) => {
             {},
             {
               border: ['', 'black','black','black'],
-              text: `: [${isTrue('is_went_abroad')}] Ya   [${isFalse('is_went_abroad')}] Tdk  [  ] Tdk Tahu`,
+              text: `: [${travelType('INTL') ? '√' : '  ' }] Ya   [${!travelType('INTL') ? '√' : '  ' }] Tdk  [  ] Tdk Tahu`,
               colSpan: 2,
               alignment: 'left'
             },{}
@@ -111,7 +182,7 @@ const render = (data) => {
             { text: 'Tgl Perjalanan', style: 'tableColumnSubHeader'  },
             { text: 'Tgl tiba di Indonesia', style: 'tableColumnSubHeader'  },
           ],
-          ...buildVisitedPlaces('visited_country'),
+          ...buildTravelPlaces('travelling_history', 'international'),
           [
             {
               border: ['black', 'black','','black'],
@@ -122,7 +193,7 @@ const render = (data) => {
             {},
             {
               border: ['', 'black','black','black'],
-              text: `: [${isTrue('is_went_other_city')}] Ya   [${isFalse('is_went_other_city')}] Tdk  [  ] Tdk Tahu`,
+              text: `: [${travelType('DOM') ? '√' : '  ' }] Ya   [${!travelType('DOM') ? '√' : '  ' }] Tdk  [  ] Tdk Tahu`,
               colSpan: 2,
               alignment: 'left'
             },{}
@@ -133,7 +204,7 @@ const render = (data) => {
             { text: 'Tgl Perjalanan', style: 'tableColumnSubHeader'  },
             { text: 'Tgl tiba di tempat', style: 'tableColumnSubHeader'  },
           ],
-          ...buildVisitedPlaces('visited_city'),
+          ...buildTravelPlaces('travelling_history', 'domestic'),
           [
             {
               border: ['black', 'black','','black'],
@@ -144,7 +215,7 @@ const render = (data) => {
             {},
             {
               border: ['', 'black','black','black'],
-              text: `: [${isVisited(market, 1)}] Ya   [${isVisited(market, 2)}] Tdk  [${isVisited(market, 3)}] Tdk Tahu`,
+              text: `: [${isTrue('visited_local_area_before_sick_14_days')}] Ya   [${isFalse('visited_local_area_before_sick_14_days')}] Tdk  [  ] Tdk Tahu`,
               colSpan: 2,
               alignment: 'left'
             },{}
@@ -177,7 +248,8 @@ const render = (data) => {
             {},
             {
               border: ['', 'black','black','black'],
-              text: `: [${isVisited(faskes, 1)}] Ya   [${isVisited(faskes, 2)}] Tdk  [${isVisited(faskes, 3)}] Tdk Tahu`,
+              text: '',
+              text: `: [${suspectContact([CRITERIA.SUS, CRITERIA.PROB]) ? '√' : '  ' }] Ya   [${!suspectContact([CRITERIA.SUS, CRITERIA.PROB]) ? '√' : '  ' }] Tdk  [  ] Tdk Tahu`,
               colSpan: 3,
               alignment: 'left'
             },{},{}
@@ -189,7 +261,7 @@ const render = (data) => {
             { text: 'Tgl Kontak Pertama', style: 'tableColumnSubHeader'  },
             { text: 'Tgl Kontak Terakhir', style: 'tableColumnSubHeader'  },
           ],
-          ...buildSuspectContact(),
+          ...buildSuspectContact([CRITERIA.SUS, CRITERIA.PROB]),
         ]
       }
     }

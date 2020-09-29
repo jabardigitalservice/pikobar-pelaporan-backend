@@ -38,6 +38,19 @@ module.exports = (server) =>{
                 ]
             },
             handler: handlers.getListTargetByCategory
+        },
+        {
+            method: 'GET',
+            path: '/type-specimens',
+            config: {
+                auth: 'jwt',
+                description: 'type Specimens',
+                tags: ['api', 'type-specimens'],
+                pre: [
+                    CheckRoleView
+                ]
+            },
+            handler: handlers.getTypeSpeciment
         }
     ]
 

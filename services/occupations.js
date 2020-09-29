@@ -1,40 +1,31 @@
-const mongoose = require('mongoose')
+const Occupation = require('../models/Occupation')
 
-require('../models/Occupation')
-const Occupation = mongoose.model('Occupation')
-
-function getOccupationList(request,callback) {
-    var params = null
-    if (request.title) {
-         params = {title: request.title}
-    }
-
-    Occupation.find()
-        .sort({ seq: 'asc' })
-        .exec()
-        .then(result => {
-            let res = result.map(q => q.toJSONFor())
-            return callback(null, res)
-        })
-        .catch(err => callback(err, null))
+const getOccupationList = async (request, callback) => {
+  try {
+    const result = await Occupation.find().sort({ seq: 'asc' })
+    callback(null, result.map(q => q.toJSONFor()))
+  } catch (error) {
+    callback(error, null)
+  }
 }
 
-function getOccupationDetail(request,callback) {
-    let id = request.params.id
-        Occupation.findOne({_id: id})
-        .exec()
-        .then(cases => callback (null, cases))
-        .catch(err => callback(err, null));
+const getOccupationDetail = async (request, callback) => {
+  let id = request.params.id
+  try {
+    const result = await Occupation.findOne({ _id : id })
+    callback(null, result)
+  } catch (error) {
+    callback(error, null)
+  }
 }
-
 
 module.exports = [
-    {
-        name: 'services.occupations.getOccupation',
-        method: getOccupationList
-    },
-    {
-        name: 'services.occupations.getOccupationDetail',
-        method: getOccupationDetail
-    }
+  {
+    name: 'services.occupations.getOccupation',
+    method: getOccupationList
+  },
+  {
+    name: 'services.occupations.getOccupationDetail',
+    method: getOccupationDetail
+  }
 ]

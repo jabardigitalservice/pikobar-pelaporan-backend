@@ -1,6 +1,7 @@
 module.exports = (server) => {
   const handlers = require('./handlers')(server)
   const CheckRoleView = require('../users/route_prerequesites').CheckRoleView(server)
+  const CheckRoleCreate = require('../users/route_prerequesites').CheckRoleCreate(server)
 
   return [
     {
@@ -13,6 +14,19 @@ module.exports = (server) => {
         pre: [ CheckRoleView ]
       },
       handler: handlers.injectLastHistory
-    }
+    },
+    {
+      method: 'POST',
+      path: '/inject/rdt',
+      config: {
+        auth: 'jwt',
+        description: 'inject data rdt from excel or spredsheet',
+        tags: ['api', 'rdt'],
+        pre: [
+          CheckRoleCreate
+        ]
+      },
+      handler: handlers.injectRdtTest
+    },
   ]
 }

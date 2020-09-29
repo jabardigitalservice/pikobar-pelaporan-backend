@@ -3,10 +3,10 @@ const replyHelper = require('../helpers')
 
 module.exports = (server) => {
     function constructCloseContactResponse(closeContact) {
-        let closeContactResponse = { 
+        let closeContactResponse = {
           status : 200,
           message: true,
-          data : closeContact 
+          data : closeContact
         }
         return closeContactResponse;
       }
@@ -35,7 +35,7 @@ module.exports = (server) => {
          */
         async ListCloseContactCase(request, reply){
             server.methods.services.closeContacts.getByCase(
-                request.params.caseId, 
+                request.params.caseId,
                 (err, result) => {
                     if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
                     return reply(
@@ -61,7 +61,7 @@ module.exports = (server) => {
                         request.payload.latest_history,
                         (err, resultChild) => {
                             if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
-                            
+
                             const res = Object.assign(result, { latest_history: resultChild })
                             return reply(
                                 constructCloseContactResponse(res,request)
@@ -111,7 +111,7 @@ module.exports = (server) => {
                             requestHistory,
                             (err, resultChild) => {
                                 if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
-                                
+
                                 const res = Object.assign(result, { latest_history: resultChild })
                                 return reply(
                                     constructCloseContactResponse(res,request)
@@ -125,7 +125,7 @@ module.exports = (server) => {
          * @param {*} request
          * @param {*} reply
          */
-        async DeleteCloseContact(request, reply) {          
+        async DeleteCloseContact(request, reply) {
             server.methods.services.closeContacts.delete(
                 request.params.closeContactId,
                 request.auth.credentials.user,
@@ -135,6 +135,82 @@ module.exports = (server) => {
                         constructCloseContactResponse(result,request)
                     ).code(200)
                 })
-        }
-    }
+        },
+        // V2
+        /**
+         * GET /api/cases/{caseId}/close-contacts-v2
+         * @param {*} request
+         * @param {*} reply
+         */
+        async ListCloseContactCaseV2(request, reply){
+          server.methods.services.closeContacts.v2.getByCase(
+              request.pre.cases,
+              (err, result) => {
+                  if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
+                  return reply(
+                      constructCloseContactResponse(result,request)
+                  ).code(200)
+              })
+      },
+      /**
+       * POST /api/cases/{caseId}/close-contacts-v2
+       * @param {*} request
+       * @param {*} reply
+       */
+      async CreateCloseContactV2(request, reply){
+          server.methods.services.closeContacts.v2.create(
+              server.methods.services,
+              request.pre,
+              request.auth.credentials.user,
+              request.payload,
+              (err, result) => {
+                  if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
+
+                  return reply(
+                    constructCloseContactResponse(result, request)
+                ).code(200)
+              })
+      },
+      /**
+       * PUT /api/cases/{caseId}/close-contacts-v2
+       * @param {*} request
+       * @param {*} reply
+       */
+      async updateCloseContactV2(request, reply){
+        const pre = request.pre
+        const id = request.params.caseId
+        const payload = request.payload
+        const author = request.auth.credentials.user
+
+        server.methods.services.cases.update(id, pre, author, payload, (errCase, resultCase) => {
+          if (errCase) return reply(replyHelper.constructErrorResponse(errCase)).code(422)
+
+          server.methods.services.histories.createIfChanged(
+            Object.assign(payload, {case: id}),
+            (err, result) => {
+            if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
+
+            return reply(
+              constructCloseContactResponse(result, request)
+            ).code(200)
+          })
+        })
+    },
+      /**
+       * DELETE api/cases/{caseId}/close-contacts-v2/{contactCaseId}
+       * @param {*} request
+       * @param {*} reply
+       */
+      async DeleteCloseContactV2(request, reply) {
+        server.methods.services.closeContacts.v2.pullCaseContact(
+            request.pre.cases,
+            request.pre.contactCase,
+            (err, result) => {
+                if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
+                return reply(
+                    constructCloseContactResponse(result,request)
+                ).code(200)
+            })
+    },
+  }
 }

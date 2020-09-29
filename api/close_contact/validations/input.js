@@ -57,7 +57,9 @@ const RequestPayload = {
       address_rt: Joi.string().allow('', null),
       address_street: Joi.string().allow('', null),
       relationship: Joi.string().required(),
-      activity: Joi.string().allow('', null),
+      relationship_other: Joi.string().allow('', null),
+      activity: Joi.array().allow('', null),
+      activity_other: Joi.string().allow('', null),
       emergency_contact_name: Joi.string().required(),
       emergency_contact_phone: Joi.string().required(),
       emergency_contact_relationship: Joi.string().allow('', null),
@@ -75,6 +77,8 @@ const RequestPayload = {
       contact_type: Joi.number().allow('', null),
       contact_place: Joi.number().allow('', null),
       contact_date: Joi.date().required(),
+      start_contact_date: Joi.date().allow('', null),
+      end_contact_date: Joi.date().allow('', null),
       contact_durations: Joi.number().allow('', null),
       home_contact_date: Joi.date().allow('', null),
       home_contact_days: Joi.number().allow('', null),
@@ -82,7 +86,7 @@ const RequestPayload = {
       officer_is_contact: Joi.boolean(),
       officer_protection_tools: Joi.array(),
       is_reported: Joi.boolean(),
-      latest_history: historyPayload 
+      latest_history: historyPayload
   }),
   options: validateOptions.options,
   failAction: validateOptions.failAction

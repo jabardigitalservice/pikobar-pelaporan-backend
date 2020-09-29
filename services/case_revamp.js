@@ -4,11 +4,14 @@ const HistoryRevamp = require('../models/History');
 const CloseContact = require('../models/CloseContact');
 const User =  require('../models/User');
 const Notification = require('../models/Notification');
+const Check = require('../helpers/rolecheck');
 const Notif = require('../helpers/notification');
+const Filter = require('../helpers/filter/casefilter');
+const { thisUnitCaseAuthors } = require('../helpers/cases/revamp/handlerget');
 const Validate = require('../helpers/cases/revamp/handlerpost');
-const { VERIFIED_STATUS, ROLE } = require('../helpers/constant');
+const { CRITERIA, VERIFIED_STATUS, ROLE, WHERE_GLOBAL } = require('../helpers/constant');
 
-const createCaseRevamp = async (raw_payload, author, pre, callback) => {
+const createCaseRevamp = async (services, raw_payload, author, pre, callback) => {
   let verified = {
     'verified_status': VERIFIED_STATUS.VERIFIED,
   };
@@ -58,12 +61,17 @@ const createCaseRevamp = async (raw_payload, author, pre, callback) => {
     const last_history = {'last_history': saveHistory._id};
     const x = Object.assign(saveCase, last_history);
     const finalSave = await x.save();
-    const mapingIdCase = raw_payload.close_contact_patient.map(r =>{
-      r.case = saveCase._id;
-      r.createdBy = author._id;
-      return r;
-    })
-    await CloseContact.create(mapingIdCase);
+
+    if (raw_payload.closecontact) {
+      const pre = { cases: finalSave }
+      await services.cases.closecontact.create(
+        services, pre, author, raw_payload.closecontact,
+        (err, result) => {
+          if (err) throw new Error
+          Object.assign(finalSave, { closecontact: result })
+        })
+    }
+
     await Notif.send(Notification, User, x, author, 'case-created');
     callback(null, finalSave);
   } catch (error) {
@@ -84,6 +92,7 @@ const checkIfExisting = async (query, callback) => {
   callback(null, check);
 }
 
+// deprecated, todo delete
 async function createCaseContact (id, author, payload, callback) {
   try {
     if (payload instanceof Array) {
@@ -115,6 +124,71 @@ async function update (id, author, payload, callback) {
   }
 }
 
+async function getCaseSummary(query, user, callback) {
+  try {
+    const caseAuthors = await thisUnitCaseAuthors(user)
+    const scope = Check.countByRole(user, caseAuthors)
+    const filter = await Filter.filterCase(user, query)
+    const searching = Object.assign(scope, filter)
+
+    const conditions = [
+      { $match: {
+        $and: [  searching, { ...WHERE_GLOBAL, last_history: { $exists: true, $ne: null } } ]
+      }},
+      {
+        $group: {
+          _id: 'status',
+          confirmed: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $eq: ['$status', CRITERIA.CONF] },
+                  ]
+                }, 1, 0]
+            }
+          },
+          probable: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $eq: ['$status', CRITERIA.PROB] },
+                  ]
+                }, 1, 0]
+            }
+          },
+          suspect: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $eq: ['$status', CRITERIA.SUS] },
+                  ]
+                }, 1, 0]
+            }
+          },
+          closeContact: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $eq: ['$status', CRITERIA.CLOSE] },
+                  ]
+                }, 1, 0]
+            }
+          },
+        },
+      },
+      { $project: { _id : 0 } },
+    ]
+    const result = await CasesRevamp.aggregate(conditions)
+    callback(null, result.shift())
+  } catch (e) {
+    callback(e, null)
+  }
+}
+
 module.exports = [
   {
     name: 'services.cases_revamp.create',
@@ -131,6 +205,10 @@ module.exports = [
   {
     name: "services.cases_revamp.update",
     method: update,
+  },
+  {
+    name: 'services.cases_revamp.getSummary',
+    method: getCaseSummary
   },
 ];
 

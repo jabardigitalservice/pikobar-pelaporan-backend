@@ -2,9 +2,9 @@ const mongoose = require('mongoose')
 const consts = require('../helpers/constant')
 const mongoosePaginate = require('mongoose-paginate-v2');
 
-const REF_CASE = { 
+const REF_CASE = {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Case', 
+    ref: 'Case',
     required: true
 }
 const REF_CLOSE_CONTACT_HISTORY = {
@@ -12,12 +12,12 @@ const REF_CLOSE_CONTACT_HISTORY = {
     ref: 'CloseContactHistory',
     default: null
 }
-const REF_USER = { 
+const REF_USER = {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', 
+    ref: 'User',
     default: null
 }
- 
+
 const CloseContactSchema = new mongoose.Schema({
     case: REF_CASE,
     interviewer_name: { type: String, default: null },
@@ -46,7 +46,9 @@ const CloseContactSchema = new mongoose.Schema({
     address_rt: { type: String, default: null },
     address_street: { type: String, default: null },
     relationship: { type: String, default: null },
-    activity: { type: String, default: null },
+    relationship_other: { type: String, default: null },
+    activity: { type: Array, default: [] }, // berubah yang tadinya string jadi array
+    activity_other: String, // aktifitas lainnya
     emergency_contact_name: { type: String, default: null },
     emergency_contact_phone: { type: String, default: null },
     emergency_contact_relationship: { type: String, default: null },
@@ -65,6 +67,8 @@ const CloseContactSchema = new mongoose.Schema({
     contact_place: { type: Number, default: 0 },
     contact_date: { type: Date, default: null },
     contact_durations: { type: Number, default: 0 },
+    start_contact_date: {type: Date, default: null},
+    end_contact_date: {type: Date, default: null},
     home_contact_date: { type: Date, default: null },
     home_contact_days: { type: Number, default: 0 },
     home_contact_activities: { type: Array, default: [] },
@@ -111,7 +115,11 @@ CloseContactSchema.methods.toJSONFor = function () {
         address_rt: this.address_rt,
         address_street : this.address_street,
         relationship : this.relationship,
+        relationship_other: this.relationship_other,
         activity: this.activity,
+        activity_other: this.activity_other,
+        start_contact_date: this.start_contact_date,
+        end_contact_date: this.end_contact_date,
         emergency_contact_name: this.emergency_contact_name,
         emergency_contact_phone: this.emergency_contact_phone,
         emergency_contact_relationship: this.emergency_contact_relationship,
@@ -156,7 +164,13 @@ CloseContactSchema.methods.toJSONList = function () {
         address_village_name: this.address_village_name,
         address_rw: this.address_rw,
         address_rt: this.address_rt,
-        address_street : this.address_street,
+        address_street: this.address_street,
+        relationship: this.relationship,
+        relationship_other: this.relationship_other,
+        activity: this.activity,
+        activity_other: this.activity_other,
+        start_contact_date: this.start_contact_date,
+        end_contact_date: this.end_contact_date,
         is_reported: this.is_reported,
         createdAt: this.createdAt,
         createdBy: this.createdBy ? this.createdBy.JSONCase() : null
@@ -185,7 +199,7 @@ CloseContactSchema.methods.onDeleteCase = function (caseId) {
  * this is why using custom validation.
  */
 
-CloseContactSchema.pre('save', async function (next) {  
+CloseContactSchema.pre('save', async function (next) {
     const nik = this.nik
 
     if (nik) {
@@ -206,7 +220,7 @@ CloseContactSchema.pre('findOneAndUpdate', async function (next) {
         if (exists) {
             throw new Error('NIK already exists')
         }
-    }    
+    }
     next()
 })
 

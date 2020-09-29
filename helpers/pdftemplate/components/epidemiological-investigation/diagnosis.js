@@ -21,19 +21,19 @@ const render = (data) => {
           ],
           [
             { text: `Diagnosis lainnya, Sebutkan!`, margin: [0, 0, 0, 5], border: [] },
-            { text: ': ...', margin: [0, 0, 0, 5], border: [] },
+            { text: `: ${history.other_diagnosis || '-' } `, margin: [0, 0, 0, 5], border: [] },
           ],
           [
             { text: 'Apakah pasien mempunyai diagnosis atau', margin: [0, 5, 0, 0], border: ['', 'black', '', ''] },
-            { text: `: [  ] Ya   [  ] Tdk  [  ] Tdk tahu `, margin: [0, 5, 0, 0], border: ['', 'black', '', ''] },
+            { text: `: [${isTrue('is_other_diagnosisr_respiratory_disease', true)}] Ya   [${isTrue('is_other_diagnosisr_respiratory_disease', false)}] Tdk  [  ] Tdk tahu `, margin: [0, 5, 0, 0], border: ['', 'black', '', ''] },
           ],
           [
             { text: 'etiologi lain untuk penyakit pernafasannya?', border: [] },
-            { text: ': ...', border: [] },
+            { text: `: ${history.other_diagnosisr_respiratory_disease || '-' } `, border: [] },
           ],
           [
             { text: `Jika Ya, Sebutkan!`, border: [] },
-            { text: ': ...', border: [] },
+            { text: ':', border: [] },
           ],
         ],
       },
@@ -42,7 +42,7 @@ const render = (data) => {
         paddingTop: (i, node) => -0.2,
         paddingBottom: (i, node) => 0
       }
-      // 
+      //
     },{},{},{}
   ]
 }

@@ -19,6 +19,7 @@ module.exports = (server) => {
         async CreateCaseRevamp(request, reply) {
             let payload = request.payload
             server.methods.services.cases_revamp.create(
+                server.methods.services,
                 payload,
                 request.auth.credentials.user,
                 request.pre,

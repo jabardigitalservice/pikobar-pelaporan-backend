@@ -130,7 +130,23 @@ module.exports = (server) => {
                     ).code(200)
                 }
             )
-        }
+        },
+        /**
+         * GET /api/area/province
+         * @param {*} request
+         * @param {*} reply
+         */
+        async getProvince(request, reply) {
+            server.methods.services.areas.province(
+                request.query,
+                (err, result) => {
+                    if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
+                    return reply(
+                        constructAreasResponse(result)
+                    ).code(200)
+                }
+            )
+        },
 
     }//end
 

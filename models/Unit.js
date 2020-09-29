@@ -5,6 +5,8 @@ const UnitSchema = new mongoose.Schema({
     unit_level: Number,
     unit_code: String, //null sementara
     unit_type: String, //puskesmas, rs, klinik
+    rs_type: String, // rs rujukan, non rujukan, darurat
+    faskes_code: String, 
     name: String,
     description: String,
     code_district_code: { type: String, default: null},
@@ -23,6 +25,8 @@ UnitSchema.methods.toJSONFor = function () {
         unit_level : this.unit_level,
         unit_code: this.unit_code,
         unit_type: this.unit_type,
+        rs_type : this.rs_type,
+        faskes_code : this.faskes_code,
         name : this.name,
         description: this.description,
         address: this.address,

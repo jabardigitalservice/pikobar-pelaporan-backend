@@ -1,16 +1,55 @@
-const components = {
-  diseases: require('./diseases'),
+const moment = require('moment')
+
+const formattedDate = (d) => {
+  return d ? moment(d).format('YYYY/MM/DD') : '-'
+}
+
+let inspects = {}
+const groupByType = (data) => {
+  const records = data.inspection_support || []
+
+  records.forEach(x => {
+    const type = x.specimens_type
+    if (!inspects[type]) {
+      inspects[type] = []
+    }
+    inspects[type].push(x)
+  })
+}
+
+const buildRow = (row, label, prop) => {
+  let inspectOne = {}
+  let inspectTwo = {}
+
+  if (inspects[prop] && inspects[prop][0]){
+    inspectOne = inspects[prop][0]
+  }
+
+  if (inspects[prop] && inspects[prop][1]){
+    inspectTwo = inspects[prop][1]
+  }
+
+  return [
+    { text: `${row}. ` },
+    { text: `${label}` },
+    { text: formattedDate(inspectOne.inspection_date) },
+    { text: `${inspectOne.inspection_location || '-'}` },
+    { text: `${inspectOne.inspection_result || '-'}` },
+    { text: formattedDate(inspectTwo.inspection_date) },
+    { text: `${inspectTwo.inspection_location || '-'}` },
+    { text: `${inspectTwo.inspection_result || '-'}` },
+  ]
 }
 
 const render = (data) => {
-  
+  groupByType(data)
   return [
     {
       pageBreak: 'before',
       style: 'tableClinical',
       color: '#444',
       table: {
-        widths: [13, 70, 78, 78, 25, 78, 78, 25],
+        widths: [13, 70, 63, 78, 40, 63, 78, 40],
         headerRows: 1,
         body: [
           [
@@ -45,46 +84,10 @@ const render = (data) => {
               alignment: 'left'
             },{},{},{},{},{},{},{}
           ],
-          [
-            { text: '1.' },
-            { text: 'Nasopharyngeal (NP) Swab'},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''}
-          ],
-          [
-            { text: '2.' },
-            { text: 'Oropharyngeal (NP) Swab'},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''}
-          ],
-          [
-            { text: '3.' },
-            { text: 'Sputum'},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''}
-          ],
-          [
-            { text: '4.' },
-            { text: 'Serum'},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''}
-          ],
+          buildRow('1', 'Nasopharyngeal (NP) Swab', 'Swab Nasofaring'),
+          buildRow('2', 'Oropharyngeal (NP) Swab', 'Swab Orofaring'),
+          buildRow('3', 'Sputum', 'Sputum'),
+          buildRow('4', 'Serum', 'Serum'),
           [
             {
               text: 'Pemeriksaan lain',
@@ -93,36 +96,9 @@ const render = (data) => {
               alignment: 'left'
             },{},{},{},{},{},{},{}
           ],
-          [
-            { text: '1.' },
-            { text: 'Darah'},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''}
-          ],
-          [
-            { text: '2.' },
-            { text: 'Serum'},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''}
-          ],
-          [
-            { text: '3.' },
-            { text: 'Lain, Sebutkan\n.'},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''},
-            { text: ''}
-          ],
+          buildRow('1', 'Darah', 'Darah'),
+          buildRow('2', 'Serum', 'Serum'),
+          buildRow('3', 'Lain, Sebutkan\n.', 'Lainnya'),
         ],
       }
     },

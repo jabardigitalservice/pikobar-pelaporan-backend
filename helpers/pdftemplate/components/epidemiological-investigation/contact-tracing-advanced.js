@@ -1,51 +1,82 @@
-const components = {
-  diseases: require('./diseases'),
-}
+const {
+  CRITERIA
+} = require('../../../constant')
+
+const moment = require('moment')
 
 const render = (data) => {
 
-  const officer = data.health_workers
+  const officer = data.close_contact_health_worker
   const ispaGroup = data.close_contact_heavy_ispa_group
-  const confirmedCase = data.close_contact_confirm
-  const protectionTools = data.apd_use.map(v => v.toLowerCase())
+  const aerosol = data.close_contact_performing_aerosol_procedures
+  const aerosolSubject = data.close_contact_performing_aerosol
+  const protectionTools = data.apd_use ? data.apd_use.map(v => v.toLowerCase()) : []
 
   const isProtected = (value) => {
     return protectionTools.includes(value) ? '√' : '  '
   }
 
-  const isTrue = (value, n) => {
-    return value == n ? '√' : '  '
+  const isTrue = (value) => {
+    return value ? '√' : '  '
   }
 
-  const buildVisitedPlaces = (place) => {
-    let visitedPlaces = [], visitedPlacesDoc = []
-    for (i in data.histories) {
-      const visitedPlace = data.histories[i][place]
-      if (visitedPlaces.includes(visitedPlace) || !visitedPlace) continue
+  const isFalse = (value) => {
+    return !value ? '√' : '  '
+  }
 
-      visitedPlaces.push(visitedPlace)
-      visitedPlacesDoc.push([
-          { text: visitedPlace },
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
-      ])
+  const formattedDate = (d) => {
+    return d ? moment(d).format('YYYY/MM/DD') : '-'
+  }
+
+  const confirmedContact = (criterias) => {
+    let res = false
+    let records = data
+    if (!records) {
+      return false
     }
 
-    if (!visitedPlaces.length) {
-      for (let i = 0;  i < 2; i++) {
-        visitedPlacesDoc.push([
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
-          { text: '-' },
-      ])
+    records = records.close_contact_premier
+    if (!records || !records.length) {
+      return false
+    }
+
+    records.forEach(v => {
+      if (criterias.includes(v.close_contact_criteria)) {
+        res = true
       }
+    })
+
+    return res
+  }
+
+  const buildConfirmedContact = (criterias) => {
+    let res = []
+
+    let records = []
+    if (data && data.close_contact_premier) {
+      records = data.close_contact_premier
     }
 
-    return visitedPlacesDoc
+    for (i in records) {
+      const rec = records[i]
+      if (!criterias.includes(rec.close_contact_criteria)) continue
+
+      res.push([
+          { alignment: 'left', text: rec.close_contact_name || '-' },
+          { alignment: 'left', text: rec.close_contact_address_street || '-' },
+          { alignment: 'center', text: rec.close_contact_relation || '-' },
+          { alignment: 'center', text: formattedDate(rec.close_contact_first_date) },
+          { alignment: 'center', text: formattedDate(rec.close_contact_last_date) },
+      ])
+    }
+
+    if (!res.length) {
+      res.push([
+        { alignment: 'center', text: '- Tidak ada riwayat -', colSpan: 5 },{},{},{},{},
+      ])
+    }
+
+    return res
   }
 
   return [
@@ -76,7 +107,7 @@ const render = (data) => {
             {},
             {
               // border: ['', '','black','black'],
-              text: `: [${isTrue(confirmedCase, 1)}] Ya   [${isTrue(confirmedCase, 2)}] Tdk  [${isTrue(confirmedCase, 3)}] Tdk Tahu`,
+              text: `: [${confirmedContact([CRITERIA.CONF]) ? '√' : '  ' }] Ya   [${!confirmedContact([CRITERIA.CONF]) ? '√' : '  ' }] Tdk  [  ] Tdk Tahu`,
               colSpan: 3,
               alignment: 'left'
             },{},{}
@@ -88,7 +119,7 @@ const render = (data) => {
             { text: 'Tgl kontak pertama', style: 'tableColumnSubHeader'  },
             { text: 'Tgl kontak terakhir', style: 'tableColumnSubHeader'  },
           ],
-          ...buildVisitedPlaces('contact_odp'),
+          ...buildConfirmedContact([CRITERIA.CONF]),
           [
             {
               text: 'Apakah pasien termasuk cluster ISPA berat (demam dan  pneumonia membutuhkan perawatan Rumah Sakit) yang tidak diketahui peyebabnya dimana kasus COVID-19 diperiksa?',
@@ -97,7 +128,7 @@ const render = (data) => {
             },
             {},
             {
-              text: `: [${isTrue(ispaGroup, 1)}] Ya   [${isTrue(ispaGroup, 2)}] Tdk  [${isTrue(ispaGroup, 3)}] Tdk Tahu`,
+              text: `: [${isTrue(ispaGroup)}] Ya   [${isFalse(ispaGroup)}] Tdk  [  ] Tdk Tahu`,
               colSpan: 3,
               alignment: 'left'
             },{},{}
@@ -110,7 +141,7 @@ const render = (data) => {
             },
             {},
             {
-              text: `: [${isTrue(officer, 1)}] Ya   [${isTrue(officer, 2)}] Tdk  [${isTrue(officer, 3)}] Tdk Tahu`,
+              text: `: [${isTrue(officer)}] Ya   [${isFalse(officer)}] Tdk  [  ] Tdk Tahu`,
               colSpan: 3,
               alignment: 'left'
             },{},{}
@@ -140,7 +171,7 @@ const render = (data) => {
             },
             {},
             {
-              text: ': [  ] Ya   [  ] Tdk , Sebutkan ...',
+              text: `: [${isTrue(aerosol)}] Ya   [${isFalse(aerosol)}] Tdk, Sebutkan: ${aerosolSubject || '-'}`,
               colSpan: 3,
               alignment: 'left'
             },{},{}

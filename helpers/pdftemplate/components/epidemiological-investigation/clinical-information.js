@@ -1,4 +1,4 @@
-const layout = require('../../layouts/epidemiological-investigation')
+const moment = require('moment')
 const components = {
   symptoms: require('./symptoms'),
   diseases: require('./diseases'),
@@ -16,13 +16,13 @@ const render = (data) => {
   }
 
   const isFinalResult = (value) => {
-    if (!value) return '  '
-    if (data.last_history.stage === "1")
-      return data.last_history.final_result === value ? '√' : '  '
-    else
-      return '  '
+    return data.last_history.final_result === value ? '√' : '  '
   }
-  
+
+  const formattedDate = (d) => {
+    return d ? moment(d).format('YYYY/MM/DD') : '-'
+  }
+
   return [
     {
       style: 'tableClinical',
@@ -37,7 +37,7 @@ const render = (data) => {
               style: 'tableHeader',
               colSpan: 4,
               alignment: 'left',
-              borderColor: ['black', 'white', 'black', 'black'],  
+              borderColor: ['black', 'white', 'black', 'black'],
             },{},{},{}
           ],
           ...components.symptoms.render(data),
@@ -92,7 +92,11 @@ const render = (data) => {
           ],
           [
             {
-              text: `Status pasien terakhir : [${isFinalResult("1")}] Sembuh    [${isFinalResult("4")}] Masih Sakit   [${isFinalResult("2")}] Meninggal, tgl: -`,
+              text:
+                `Status pasien terakhir : [${isFinalResult("1")}] Sembuh `
+                + `[${isFinalResult("4")}] Masih Sakit  `
+                + `[${isFinalResult("2")}] Meninggal, `
+                + `tgl: ${formattedDate(data.last_date_status_patient)}`,
               colSpan: 4,
               alignment: 'left'
             },{},{},{}

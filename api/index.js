@@ -42,21 +42,29 @@ const register = (server, options, next) => {
   server.register(require('./cases'))
   server.register(require('./cases_transfers'))
   server.register(require('./cases_verifications'))
+  server.register(require('./cases_closecontact'))
   server.register(require('./histories'))
   server.register(require('./occupations'))
   server.register(require('./rdt'))
   server.register(require('./category'))
-  server.register(require('./country'));
-  server.register(require('./dashboard'));
-  server.register(require('./logistics'));
-  server.register(require('./map'));
-  server.register(require('./unit'));
-  server.register(require('./case_related'));
-  server.register(require('./cases_revamp'));
-  server.register(require('./close_contact'));
-  server.register(require('./case_dashboard'));
+  server.register(require('./country'))
+  server.register(require('./dashboard'))
+  server.register(require('./logistics'))
+  server.register(require('./map'))
+  server.register(require('./unit'))
+  server.register(require('./case_related'))
+  server.register(require('./cases_revamp'))
+  server.register(require('./close_contact'))
+  server.register(require('./case_dashboard'))
+  server.register(require('./reports'))
   server.register(require('./inject'))
-
+  server.register(require('./history_travel'))
+  server.register(require('./public_place'))
+  server.register(require('./local_transmission'))
+  server.register(require('./case_exposure'))
+  server.register(require('./inspection_support'))
+  server.register(require('./search'))
+  server.register(require('./v2/cases'))
 
   server.ext('onPreResponse', preResponse)
   server.ext('onRequest', onRequest)

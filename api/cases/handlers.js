@@ -24,7 +24,7 @@ module.exports = (server) => {
             let query = request.query
 
             server.methods.services.cases.list(
-                query, 
+                query,
                 request.auth.credentials.user,
                 (err, result) => {
                 if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
@@ -103,7 +103,7 @@ module.exports = (server) => {
          * @param {*} reply
          */
         async GetCaseSummary(request, reply) {
-            server.methods.services.cases.getSummary(
+            server.methods.services.cases_revamp.getSummary(
                 request.query,
                 request.auth.credentials.user,
                 (err, item) => {
@@ -165,7 +165,7 @@ module.exports = (server) => {
          * @param {*} request
          * @param {*} reply
          */
-        async DeleteCase(request, reply) {          
+        async DeleteCase(request, reply) {
             server.methods.services.cases.softDeleteCase(
                 request.pre.cases,
                 request.auth.credentials.user,
@@ -186,7 +186,7 @@ module.exports = (server) => {
             let query = request.query
             const fullName = request.auth.credentials.user.fullname.replace(/\s/g, '-')
             server.methods.services.cases.listCaseExport(
-                query, 
+                query,
                 request.auth.credentials.user,
                 (err, result) => {
                 if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
