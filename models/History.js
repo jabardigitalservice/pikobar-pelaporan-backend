@@ -136,4 +136,3 @@ HistorySchema.pre('save', async function (next) {
 })
 
 module.exports = mongoose.model('History', HistorySchema)
->>>>>>> 8af6db5df1f9fe528a6c5e6a519e3922b6c9fe5b
