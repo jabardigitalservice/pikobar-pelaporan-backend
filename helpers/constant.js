@@ -41,7 +41,7 @@ module.exports = {
   WHERE_GLOBAL: {
     delete_status: { $ne: 'deleted' },
     verified_status: 'verified',
-    is_west_java: true,
+    is_west_java: { $ne: false },
   },
   GENDER: {
     MALE: 'L',
@@ -154,4 +154,5 @@ module.exports = {
     CONFIRMED_ISOLATION: 'Jumlah kasus konfirmasi',
     CLOSE_CONTACT_ISOLATION: 'Jumlah kontak erat sedang dipantau'
   }
+>>>>>>> 8af6db5df1f9fe528a6c5e6a519e3922b6c9fe5b
 }

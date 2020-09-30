@@ -40,6 +40,15 @@ const HistorySchema = new mongoose.Schema({
     there_are_symptoms :  { type: Boolean, default: false},
     is_other_diagnosisr_respiratory_disease: {type: Boolean, default: false},
     other_diagnosisr_respiratory_disease: String,
+    pysichal_activity: { type: Number, default: null },
+    smoking: { type: Number, default: null }, // 1 ya 2 tidak 3 tidak tahu
+    consume_alcohol: { type: Number, default: null }, // 1 ya 2 tidak 3 tidak tahu
+    physical_check_temperature: { type: Number, default: 0 },
+    physical_check_blood_pressure: { type: Number, default: 0 },
+    physical_check_pulse: { type: Number, default: 0 },
+    physical_check_respiration: { type: Number, default: 0 },
+    physical_check_height: { type: Number, default: 0 },
+    physical_check_weight: { type: Number, default: 0 },
 }, { timestamps : true });
 
 HistorySchema.index({case: 1});
@@ -79,6 +88,15 @@ HistorySchema.methods.toJSONFor = function () {
         diagnosis_covid : this.diagnosis_covid,
         diagnosis_pneumonia : this.diagnosis_pneumonia,
         other_diagnosis: this.other_diagnosis,
+        pysichal_activity: this.pysichal_activity,
+        smoking: this.smoking,
+        consume_alcohol: this.consume_alcohol,
+        physical_check_temperature: this.physical_check_temperature,
+        physical_check_blood_pressure: this.physical_check_blood_pressure,
+        physical_check_pulse: this.physical_check_pulse,
+        physical_check_respiration: this.physical_check_respiration,
+        physical_check_height: this.physical_check_height,
+        physical_check_weight: this.physical_check_weight,
         createdAt : this.createdAt,
         updatedAt : this.updatedAt
     }
@@ -118,3 +136,4 @@ HistorySchema.pre('save', async function (next) {
 })
 
 module.exports = mongoose.model('History', HistorySchema)
+>>>>>>> 8af6db5df1f9fe528a6c5e6a519e3922b6c9fe5b
