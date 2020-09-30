@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const inputValidations = require('./validations/input')
 module.exports = (server) =>{
   const handlers = require('./handlers')(server)
@@ -40,3 +41,47 @@ module.exports = (server) =>{
     },
   ]
 }
+=======
+const inputValidations = require('./validations/input')
+module.exports = (server) =>{
+  const handlers = require('./handlers')(server)
+  const getCasebyId = require('../../cases/route_prerequesites').getCasebyId(server)
+  const CheckRoleCreate = require('../../users/route_prerequesites').CheckRoleCreate(server)
+  const countCaseByDistrict = require('../../cases/route_prerequesites').countCaseByDistrict(server)
+  const countCasesOutsideWestJava = require('./route_prerequesites').countCasesOutsideWestJava(server)
+  const countCasePendingByDistrict = require('../../cases/route_prerequesites').countCasePendingByDistrict(server)
+
+  return [
+    {
+      method: 'POST',
+      path: '/v2/cases',
+      config: {
+        auth: 'jwt',
+        description: 'create new cases',
+        tags: [ 'api', 'v2.cases' ],
+        validate: inputValidations.RequestPayload,
+        pre: [
+          CheckRoleCreate,
+          countCaseByDistrict,
+          countCasesOutsideWestJava,
+          countCasePendingByDistrict,
+        ]
+      },
+      handler: handlers.CreateCase
+    },
+    {
+      method: 'GET',
+      path: '/v2/cases/{id}/status',
+      config: {
+        auth: 'jwt',
+        description: 'get specific case status',
+        tags: ['api', 'cases'],
+        pre: [
+          getCasebyId,
+        ]
+      },
+      handler: handlers.GetCaseSectionStatus
+    },
+  ]
+}
+>>>>>>> 8af6db5df1f9fe528a6c5e6a519e3922b6c9fe5b
