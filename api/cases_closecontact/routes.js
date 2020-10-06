@@ -5,70 +5,71 @@ module.exports = (server) =>{
     const isAccessGranted = require('./route_prerequesites').isAccessGranted(server)
     const thisPath = '/cases/{caseId}/closecontact'
     const specificPath = '/cases/{caseId}/closecontact/{contactCaseId}'
-    const apiPath = (method, path) => {
-      return {
-        method: method,
-        path: path
-      }
-    }
+
     return [
       {
-        ...apiPath('GET', thisPath),
+        method: 'GET',
+        path: thisPath,
         config: {
-          auth: 'jwt',
           description: 'show list of all close-contacts per-case',
           tags: [ 'api', 'list', 'close_contacts', ],
           pre: [ getCaseById, ],
+          auth: 'jwt',
         },
         handler: handlers.ListClosecontactCase(server),
       },
       {
-        ...apiPath('POST', thisPath),
+        method: 'POST',
+        path: thisPath,
         config: {
-          auth: 'jwt',
           description: 'create new close contacts',
           tags: [ 'api', 'create', 'close_contacts', ],
           pre: [ getCaseById, ],
+          auth: 'jwt',
         },
         handler: handlers.CreateClosecontact(server),
       },
       {
-        ...apiPath('PUT', thisPath),
+        method: 'PUT',
+        path: thisPath,
         config: {
-          auth: 'jwt',
           description: 'update close contacts',
           tags: [ 'api', 'updaterecord', 'close_contacts', ],
           pre: [ getCaseById ],
+          auth: 'jwt',
         },
         handler: handlers.updateClosecontact(server),
       },
       {
-        ...apiPath('GET', specificPath),
+        method: 'GET',
+        path: specificPath,
         config: {
-          auth: 'jwt',
           description: 'detail specific close contact',
           tags: [ 'api', 'detail', 'close_contacts', ],
           pre: [ getCaseById, getContactCaseById ],
+          auth: 'jwt',
         },
         handler: handlers.DetailClosecontact(server),
       },
       {
-        ...apiPath('PUT', specificPath),
+        method: 'PUT',
+        path: specificPath,
         config: {
-          auth: 'jwt',
           description: 'update specific close contact',
           tags: [ 'api', 'put', 'close_contacts', ],
           pre: [ getCaseById, getContactCaseById ],
+          auth: 'jwt',
         },
         handler: handlers.UpdateClosecontact(server),
       },
       {
-        ...apiPath('DELETE', specificPath),
+        method: 'DELETE',
+        path: specificPath,
         config: {
-          auth: 'jwt',
           description: 'delete specific close contact',
           tags: [ 'api', 'delete', 'close_contacts', ],
           pre: [ getCaseById, getContactCaseById, isAccessGranted ],
+          auth: 'jwt',
         },
         handler: handlers.DeleteClosecontact(server),
       },
