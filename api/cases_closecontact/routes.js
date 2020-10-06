@@ -5,11 +5,15 @@ module.exports = (server) =>{
     const isAccessGranted = require('./route_prerequesites').isAccessGranted(server)
     const thisPath = '/cases/{caseId}/closecontact'
     const specificPath = '/cases/{caseId}/closecontact/{contactCaseId}'
-
+    const apiPath = (method, path) => {
+      return {
+        method: method,
+        path: path
+      }
+    }
     return [
       {
-        method: 'GET',
-        path: thisPath,
+        ...apiPath('GET', thisPath),
         config: {
           auth: 'jwt',
           description: 'show list of all close-contacts per-case',
@@ -19,8 +23,7 @@ module.exports = (server) =>{
         handler: handlers.ListClosecontactCase(server),
       },
       {
-        method: 'POST',
-        path: thisPath,
+        ...apiPath('POST', thisPath),
         config: {
           auth: 'jwt',
           description: 'create new close contacts',
@@ -30,8 +33,7 @@ module.exports = (server) =>{
         handler: handlers.CreateClosecontact(server),
       },
       {
-        method: 'PUT',
-        path: thisPath,
+        ...apiPath('PUT', thisPath),
         config: {
           auth: 'jwt',
           description: 'update close contacts',
@@ -41,8 +43,7 @@ module.exports = (server) =>{
         handler: handlers.updateClosecontact(server),
       },
       {
-        method: 'GET',
-        path: specificPath,
+        ...apiPath('GET', specificPath),
         config: {
           auth: 'jwt',
           description: 'detail specific close contact',
@@ -52,8 +53,7 @@ module.exports = (server) =>{
         handler: handlers.DetailClosecontact(server),
       },
       {
-        method: 'PUT',
-        path: specificPath,
+        ...apiPath('PUT', specificPath),
         config: {
           auth: 'jwt',
           description: 'update specific close contact',
@@ -63,8 +63,7 @@ module.exports = (server) =>{
         handler: handlers.UpdateClosecontact(server),
       },
       {
-        method: 'DELETE',
-        path: specificPath,
+        ...apiPath('DELETE', specificPath),
         config: {
           auth: 'jwt',
           description: 'delete specific close contact',
