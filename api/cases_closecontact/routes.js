@@ -1,5 +1,5 @@
 module.exports = (server) =>{
-    const handlers = require('./handlers')(server)
+    const handlers = require('./handlers')
     const getCaseById = require('./route_prerequesites').getCasebyId(server)
     const getContactCaseById = require('./route_prerequesites').getContactCaseById(server)
     const isAccessGranted = require('./route_prerequesites').isAccessGranted(server)
@@ -14,7 +14,7 @@ module.exports = (server) =>{
           tags: [ 'api', 'close_contacts', ],
           pre: [ getCaseById, ],
         },
-        handler: handlers.ListClosecontactCase,
+        handler: handlers.ListClosecontactCase(server),
       },
       {
         method: 'POST',
@@ -25,7 +25,7 @@ module.exports = (server) =>{
           tags: [ 'api', 'close_contacts', ],
           pre: [ getCaseById, ],
         },
-        handler: handlers.CreateClosecontact,
+        handler: handlers.CreateClosecontact(server),
       },
       {
         method: 'PUT',
@@ -36,7 +36,7 @@ module.exports = (server) =>{
           tags: [ 'api', 'close_contacts', ],
           pre: [ getCaseById ],
         },
-        handler: handlers.updateClosecontact,
+        handler: handlers.updateClosecontact(server),
       },
       {
         method: 'GET',
@@ -47,7 +47,7 @@ module.exports = (server) =>{
           tags: [ 'api', 'close_contacts', ],
           pre: [ getCaseById, getContactCaseById ],
         },
-        handler: handlers.DetailClosecontact,
+        handler: handlers.DetailClosecontact(server),
       },
       {
         method: 'PUT',
@@ -58,7 +58,7 @@ module.exports = (server) =>{
           tags: [ 'api', 'close_contacts', ],
           pre: [ getCaseById, getContactCaseById ],
         },
-        handler: handlers.UpdateClosecontact,
+        handler: handlers.UpdateClosecontact(server),
       },
       {
         method: 'DELETE',
@@ -69,7 +69,7 @@ module.exports = (server) =>{
           tags: [ 'api', 'close_contacts', ],
           pre: [ getCaseById, getContactCaseById, isAccessGranted ],
         },
-        handler: handlers.DeleteClosecontact,
+        handler: handlers.DeleteClosecontact(server),
       },
     ]
 }
