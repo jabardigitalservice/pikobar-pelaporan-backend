@@ -17,4 +17,18 @@ const configWithValidation = (description, tags, validations, role) => {
   }
 }
 
-module. exports = { configRoute, configWithValidation }
+const roles = (server) => {
+  const CheckRoleView = require('../../api/users/route_prerequesites').CheckRoleView(server)
+  const CheckRoleCreate = require('../../api/users/route_prerequesites').CheckRoleCreate(server)
+  const CheckRoleUpdate = require('../../api/users/route_prerequesites').CheckRoleUpdate(server)
+  const CheckRoleDelete = require('../../api/users/route_prerequesites').CheckRoleDelete(server)
+
+  return  {
+    view: CheckRoleView,
+    create: CheckRoleCreate,
+    update: CheckRoleUpdate,
+    delete: CheckRoleDelete
+  }
+}
+
+module. exports = { configRoute, configWithValidation, roles }

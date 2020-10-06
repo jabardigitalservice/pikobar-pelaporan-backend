@@ -1,11 +1,8 @@
 module.exports = (server) => {
   const handlers = require('./handlers')
-  const CheckRoleView = require('../users/route_prerequesites').CheckRoleView(server);
-  const CheckRoleCreate = require('../users/route_prerequesites').CheckRoleCreate(server)
-  const CheckRoleUpdate = require('../users/route_prerequesites').CheckRoleUpdate(server)
-  const CheckRoleDelete = require('../users/route_prerequesites').CheckRoleDelete(server)
-
-  const apiPath = (method, path, callback, role) => {
+  const { roles } = require("../../helpers/routes")
+  
+  const route = (method, path, callback, role) => {
     return {
       method: method,
       path: path,
@@ -20,9 +17,9 @@ module.exports = (server) => {
   }
 
   return [
-    apiPath('GET', '/history-travel/{id_case}', 'getHistoryTravel', CheckRoleView),
-    apiPath('POST', '/history-travel/{id_case}', 'createHistoryTravel', CheckRoleCreate),
-    apiPath('PUT', '/history-travel/{id_history_travel}', 'updateHistoryTravel', CheckRoleUpdate),
-    apiPath('DELETE', '/history-travel/{id_history_travel}', 'deleteHistoryTravel', CheckRoleDelete),
+    route('GET', '/history-travel/{id_case}', 'getHistoryTravel', roles(server).view),
+    route('POST', '/history-travel/{id_case}', 'createHistoryTravel', roles(server).create),
+    route('PUT', '/history-travel/{id_history_travel}', 'updateHistoryTravel', roles(server).update),
+    route('DELETE', '/history-travel/{id_history_travel}', 'deleteHistoryTravel', roles(server).delete),
   ]
 }
