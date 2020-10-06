@@ -5,50 +5,24 @@ module.exports = (server) => {
   const CheckRoleUpdate = require('../users/route_prerequesites').CheckRoleUpdate(server)
   const CheckRoleDelete = require('../users/route_prerequesites').CheckRoleDelete(server)
 
-  return [
-    {
-      method: 'POST',
-      path: '/public-place/{id_case}',
+  const apiPath = (method, path, callback, role) => {
+    return {
+      method: method,
+      path: path,
       config: {
-        auth: 'jwt',
-        description: 'create public-place',
+        description: `${method} public-place`,
         tags: ['api', 'public-place'],
-        pre: [ CheckRoleCreate ]
-      },
-      handler: handlers.createPublicPlace(server)
-    },
-    {
-      method: 'GET',
-      path: '/public-place/{id_case}',
-      config: {
+        pre: [ role ],
         auth: 'jwt',
-        description: 'show list public-place',
-        tags: ['api', 'public-place'],
-        pre: [ CheckRoleView ]
       },
-      handler:  handlers.getPublicPlace(server)
-    },
-    {
-      method: 'PUT',
-      path: '/public-place/{id_public_place}',
-      config: {
-        auth: 'jwt',
-        description: 'update public-place',
-        tags: ['api', 'public-place'],
-        pre: [ CheckRoleUpdate ],
-      },
-      handler:  handlers.updatePublicPlace(server)
-    },
-    {
-      method: 'DELETE',
-      path: '/public-place/{id_public_place}',
-      config: {
-        auth: 'jwt',
-        description: 'delete public-place',
-        tags: ['api', 'public-place'],
-        pre: [ CheckRoleDelete ],
-      },
-      handler: handlers.deletePublicPlace(server)
+      handler: handlers[callback](server),
     }
+  }
+
+  return [
+    apiPath('GET', '/public-place/{id_case}', 'getPublicPlace', CheckRoleView),
+    apiPath('POST', '/public-place/{id_case}', 'createPublicPlace', CheckRoleCreate),
+    apiPath('PUT', '/public-place/{id_public_place}', 'updatePublicPlace', CheckRoleUpdate),
+    apiPath('DELETE', '/public-place/{id_public_place}', 'deletePublicPlace', CheckRoleDelete),
   ]
 }
