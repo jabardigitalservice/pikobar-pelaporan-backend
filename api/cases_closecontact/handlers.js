@@ -61,9 +61,9 @@ const updateClosecontact = (server) => {
  */
 const DetailClosecontact = (server) => {
   return (request, reply) => {
+    const { cases, contactCase } = request.pre
     server.methods.services.cases.closecontact.detailCaseContact(
-      request.pre.cases,
-      request.pre.contactCase,
+      cases, contactCase,
       (err, result) => {
         replyJson(err, result, reply)
       }
@@ -92,9 +92,9 @@ const UpdateClosecontact = (server) => {
  */
 const DeleteClosecontact = (server) => {
   return (request, reply) => {
+    const { cases, contactCase } = request.pre
     server.methods.services.cases.closecontact.pullCaseContact(
-      request.pre.cases,
-      request.pre.contactCase,
+      cases, contactCase,
       (err, result) => {
         replyJson(err, result, reply)
       }
