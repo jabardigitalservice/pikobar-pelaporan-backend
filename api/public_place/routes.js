@@ -1,5 +1,5 @@
 module.exports = (server) => {
-  const handlers = require('./handlers')(server)
+  const handlers = require('./handlers')
   const CheckRoleView = require('../users/route_prerequesites').CheckRoleView(server);
   const CheckRoleCreate = require('../users/route_prerequesites').CheckRoleCreate(server)
   const CheckRoleUpdate = require('../users/route_prerequesites').CheckRoleUpdate(server)
@@ -15,7 +15,7 @@ module.exports = (server) => {
         tags: ['api', 'public-place'],
         pre: [ CheckRoleCreate ]
       },
-      handler: handlers.createPublicPlace
+      handler: handlers.createPublicPlace(server)
     },
     {
       method: 'GET',
@@ -26,7 +26,7 @@ module.exports = (server) => {
         tags: ['api', 'public-place'],
         pre: [ CheckRoleView ]
       },
-      handler:  handlers.getPublicPlace
+      handler:  handlers.getPublicPlace(server)
     },
     {
       method: 'PUT',
@@ -37,7 +37,7 @@ module.exports = (server) => {
         tags: ['api', 'public-place'],
         pre: [ CheckRoleUpdate ],
       },
-      handler:  handlers.updatePublicPlace
+      handler:  handlers.updatePublicPlace(server)
     },
     {
       method: 'DELETE',
@@ -48,7 +48,7 @@ module.exports = (server) => {
         tags: ['api', 'public-place'],
         pre: [ CheckRoleDelete ],
       },
-      handler: handlers.deletePublicPlace
+      handler: handlers.deletePublicPlace(server)
     }
   ]
 }
