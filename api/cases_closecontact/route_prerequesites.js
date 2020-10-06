@@ -3,6 +3,7 @@ const replyHelper = require('../helpers')
 const getById = (server, paramKey, errMsg) => {
   return (request, reply) => {
     const id = request.params[paramKey]
+    if (!id) { return reply(true) }
     server.methods.services.cases.getById(id, (err, result) => {
       if (err) {
         return reply(replyHelper.constructErrorResponse(err)).code(422).takeover()
@@ -40,6 +41,8 @@ const isAccessGranted = server => {
       const currentCase = request.preResponses.cases.source
       const contactCase = request.preResponses.contactCase.source
       const attrs = [ 'close_contact_parents', 'close_contact_childs' ]
+
+      if (request.route.method !== 'delete') { return reply(true) }
 
       attrs.forEach(key => {
         if (currentCase[key]) {
