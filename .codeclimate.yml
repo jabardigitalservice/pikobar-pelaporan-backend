@@ -1,12 +1,20 @@
 version: "2"
 checks:
   file-lines:
-    enabled: true # default is 250, which is low when we have logic and ui in some files
+    enabled: true
   method-lines:
-    enabled: true # default is 25 which is low for render() methods
+    enabled: true
 plugins:
   duplication:
     enabled: false
     config:
       languages:
         javascript:
+exclude_patterns:
+- api/
+- auth/
+- config/
+- helpers/
+- models/
+- services/
+- static/
