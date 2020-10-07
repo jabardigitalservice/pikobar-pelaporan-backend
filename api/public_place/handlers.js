@@ -1,52 +1,44 @@
 const { replyJson } = require('../helpers')
+const { createIfSame, getIfSame,
+  updateIfSame, deleteIfSame
+} = require('../../helpers/request')
 /**
  * /api/public-place
  * @param {*} request
  * @param {*} reply
 */
 const createPublicPlace = (server) => {
-  return (request, reply) => {
-    server.methods.services.public_place.create(
-      request.payload,
-      request.params.id_case,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    await createIfSame(
+      server, request, "id_case",
+      reply, "public_place", replyJson
     )
   }
 }
 
 const getPublicPlace = (server) => {
-  return (request, reply) => {
-    server.methods.services.public_place.read(
-      request.params.id_case,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    await getIfSame(
+      server, request, "id_case",
+      reply, "public_place", replyJson
     )
   }
 }
 
 const updatePublicPlace = (server) => {
-  return (request, reply) => {
-    server.methods.services.public_place.update(
-      request.params.id_public_place,
-      request.payload,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    await updateIfSame(
+      server, request, "id_public_place",
+      reply, "public_place", replyJson
     )
   }
 }
 
 const deletePublicPlace = (server) => {
-  return (request, reply) => {
-    const { id_public_place } = request.params
-    server.methods.services.public_place.delete(
-      id_public_place,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    await deleteIfSame(
+      server, request, "id_public_place",
+      reply, "public_place", replyJson
     )
   }
 }

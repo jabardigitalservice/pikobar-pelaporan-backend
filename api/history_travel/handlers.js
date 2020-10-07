@@ -1,52 +1,44 @@
 const { replyJson } = require('../helpers')
+const { createIfSame, getIfSame,
+  updateIfSame, deleteIfSame
+} = require('../../helpers/request')
 /**
  * /api/history-travel
  * @param {*} request
  * @param {*} reply
 */
 const createHistoryTravel = (server) => {
-  return (request, reply) => {
-    server.methods.services.history_travel.create(
-      request.payload,
-      request.params.id_case,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    createIfSame(
+      server, request, "id_case",
+      reply, "history_travel", replyJson
     )
   }
 }
 
 const getHistoryTravel = (server) => {
-  return (request, reply) => {
-    server.methods.services.history_travel.read(
-      request.params.id_case,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    getIfSame(
+      server, request, "id_case",
+      reply, "history_travel", replyJson
     )
   }
 }
 
 const updateHistoryTravel = (server) => {
-  return (request, reply) => {
-    server.methods.services.history_travel.update(
-      request.params.id_history_travel,
-      request.payload,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    await updateIfSame(
+      server, request, "id_history_travel",
+      reply, "history_travel", replyJson
     )
   }
 }
 
 const deleteHistoryTravel = (server) => {
-  return (request, reply) => {
-    const { id_history_travel } = request.params
-    server.methods.services.history_travel.delete(
-      id_history_travel,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    deleteIfSame(
+      server, request, "id_history_travel",
+      reply, "history_travel", replyJson
     )
   }
 }
