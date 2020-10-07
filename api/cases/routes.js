@@ -169,10 +169,7 @@ module.exports = (server) =>{
                 auth: 'jwt',
                 description: 'Export Case to epidemiological investigation Form',
                 tags: ['api', 'epidemiological.investigation.form'],
-                pre: [
-                    CheckRoleView,
-                    getCasebyId
-                ]
+                pre: [ getCasebyId ],
             },
             handler: handlers.EpidemiologicalInvestigationForm
         },

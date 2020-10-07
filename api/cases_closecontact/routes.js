@@ -1,75 +1,29 @@
 module.exports = (server) =>{
-    const handlers = require('./handlers')(server)
-    const getCaseById = require('./route_prerequesites').getCasebyId(server)
-    const getContactCaseById = require('./route_prerequesites').getContactCaseById(server)
-    const isAccessGranted = require('./route_prerequesites').isAccessGranted(server)
+  const handlers = require('./handlers')
+  const getCaseById = require('./route_prerequesites').getCasebyId(server)
+  const getContactCaseById = require('./route_prerequesites').getContactCaseById(server)
+  const isAccessGranted = require('./route_prerequesites').isAccessGranted(server)
 
-    return [
-      {
-        method: 'GET',
-        path: '/cases/{caseId}/closecontact',
-        config: {
-          auth: 'jwt',
-          description: 'show list of all close-contacts per-case',
-          tags: [ 'api', 'close_contacts', ],
-          pre: [ getCaseById, ],
-        },
-        handler: handlers.ListClosecontactCase,
+  const route = (method, path, callback) => {
+    return {
+      method: method,
+      path: path,
+      config: {
+        description: ` ${method} close-contacts`,
+        tags: [ 'api', 'list', 'close_contacts', ],
+        pre: [ getCaseById, getContactCaseById, isAccessGranted ],
+        auth: 'jwt',
       },
-      {
-        method: 'POST',
-        path: '/cases/{caseId}/closecontact',
-        config: {
-          auth: 'jwt',
-          description: 'create new close contacts',
-          tags: [ 'api', 'close_contacts', ],
-          pre: [ getCaseById, ],
-        },
-        handler: handlers.CreateClosecontact,
-      },
-      {
-        method: 'PUT',
-        path: '/cases/{caseId}/closecontact',
-        config: {
-          auth: 'jwt',
-          description: 'update close contacts',
-          tags: [ 'api', 'close_contacts', ],
-          pre: [ getCaseById ],
-        },
-        handler: handlers.updateClosecontact,
-      },
-      {
-        method: 'GET',
-        path: '/cases/{caseId}/closecontact/{contactCaseId}',
-        config: {
-          auth: 'jwt',
-          description: 'detail specific close contact',
-          tags: [ 'api', 'close_contacts', ],
-          pre: [ getCaseById, getContactCaseById ],
-        },
-        handler: handlers.DetailClosecontact,
-      },
-      {
-        method: 'PUT',
-        path: '/cases/{caseId}/closecontact/{contactCaseId}',
-        config: {
-          auth: 'jwt',
-          description: 'update specific close contact',
-          tags: [ 'api', 'close_contacts', ],
-          pre: [ getCaseById, getContactCaseById ],
-        },
-        handler: handlers.UpdateClosecontact,
-      },
-      {
-        method: 'DELETE',
-        path: '/cases/{caseId}/closecontact/{contactCaseId}',
-        config: {
-          auth: 'jwt',
-          description: 'delete specific close contact',
-          tags: [ 'api', 'close_contacts', ],
-          pre: [ getCaseById, getContactCaseById, isAccessGranted ],
-        },
-        handler: handlers.DeleteClosecontact,
-      },
-    ]
+      handler: handlers[callback](server),
+    }
+  }
+
+  return [
+    route('GET', '/cases/{caseId}/closecontact', 'ListClosecontactCase'),
+    route('POST', '/cases/{caseId}/closecontact', 'CreateClosecontact'),
+    route('PUT', '/cases/{caseId}/closecontact', 'updateClosecontact'),
+    route('GET', '/cases/{caseId}/closecontact/{contactCaseId}', 'DetailClosecontact'),
+    route('PUT', '/cases/{caseId}/closecontact/{contactCaseId}', 'UpdateClosecontact'),
+    route('DELETE', '/cases/{caseId}/closecontact/{contactCaseId}', 'DeleteClosecontact'),
+  ]
 }
