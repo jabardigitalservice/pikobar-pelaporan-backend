@@ -10,7 +10,7 @@ typings
 .npm
 /data
 /upload/
-
+.codeclimate.yml
 
 
 Dockerfile
