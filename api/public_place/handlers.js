@@ -1,7 +1,5 @@
 const { replyJson } = require('../helpers')
-const { createIfSame, getIfSame,
-  updateIfSame, deleteIfSame
-} = require('../../helpers/request')
+const { createIfSame, updateIfSame, funcIfSame } = require('../../helpers/request')
 /**
  * /api/public-place
  * @param {*} request
@@ -18,9 +16,9 @@ const createPublicPlace = (server) => {
 
 const getPublicPlace = (server) => {
   return async (request, reply) => {
-    await getIfSame(
+    await funcIfSame(
       server, request, "id_case",
-      reply, "public_place", replyJson
+      reply, "public_place", "read", replyJson
     )
   }
 }
@@ -36,9 +34,9 @@ const updatePublicPlace = (server) => {
 
 const deletePublicPlace = (server) => {
   return async (request, reply) => {
-    await deleteIfSame(
+    await funcIfSame(
       server, request, "id_public_place",
-      reply, "public_place", replyJson
+      reply, "public_place", "delete", replyJson
     )
   }
 }

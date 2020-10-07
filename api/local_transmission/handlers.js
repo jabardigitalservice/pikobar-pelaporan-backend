@@ -1,53 +1,42 @@
 const { replyJson } = require('../helpers')
+const { createIfSame, updateIfSame, funcIfSame } = require('../../helpers/request')
 /**
  * /api/local-transmission
  * @param {*} request
  * @param {*} reply
 */
 const createLocalTransmission = (server) => {
-  return (request, reply) => {
-    server.methods.services.local_transmission.create(
-      request.payload,
-      request.params.id_case,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    await createIfSame(
+      server, request, "id_case",
+      reply, "local_transmission", replyJson
     )
   }
 }
 
 const getLocalTransmission = (server) => {
-  return (request, reply) => {
-    const { id_case } = request.params
-    server.methods.services.local_transmission.read(
-      id_case,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    await funcIfSame(
+      server, request, "id_case",
+      reply, "local_transmission", "read", replyJson
     )
   }
 }
 
 const updateLocalTransmission = (server) => {
-  return (request, reply) => {
-    const { id_local_transmission } = request.params
-    server.methods.services.local_transmission.update(
-      id_local_transmission,
-      request.payload,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    await updateIfSame(
+      server, request, "id_local_transmission",
+      reply, "local_transmission", replyJson
     )
   }
 }
 
 const deleteLocalTransmission = (server) => {
-  return (request, reply) => {
-    server.methods.services.local_transmission.delete(
-      request.params.id_local_transmission,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    await funcIfSame(
+      server, request, "id_local_transmission",
+      reply, "local_transmission", "delete", replyJson
     )
   }
 }

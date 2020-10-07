@@ -17,15 +17,6 @@ const createIfSame = async (server, request, param, reply, name, replyJson) => {
   )
 }
 
-const getIfSame = async (server, request, param, reply, name, replyJson) => {
-  server.methods.services[name].read(
-    request.params[param],
-    (err, result) => {
-      replyJson(err, result, reply)
-    }
-  )
-}
-
 const updateIfSame = async (server, request, param, reply, name, replyJson) => {
   server.methods.services[name].update(
     request.params[param],
@@ -36,8 +27,8 @@ const updateIfSame = async (server, request, param, reply, name, replyJson) => {
   )
 }
 
-const deleteIfSame = async (server, request, param, reply, name, replyJson) => {
-  server.methods.services[name].delete(
+const funcIfSame = async (server, request, param, reply, name, methods, replyJson) => {
+  server.methods.services[name][methods](
     request.params[param],
     (err, result) => {
       replyJson(err, result, reply)
@@ -45,5 +36,5 @@ const deleteIfSame = async (server, request, param, reply, name, replyJson) => {
   )
 }
 
-module.exports = { createIfSame, getIfSame, updateIfSame, deleteIfSame }
+module.exports = { createIfSame, updateIfSame, funcIfSame }
 

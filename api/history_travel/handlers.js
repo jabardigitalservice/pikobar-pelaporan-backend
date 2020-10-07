@@ -1,7 +1,5 @@
 const { replyJson } = require('../helpers')
-const { createIfSame, getIfSame,
-  updateIfSame, deleteIfSame
-} = require('../../helpers/request')
+const { createIfSame, updateIfSame, funcIfSame } = require('../../helpers/request')
 /**
  * /api/history-travel
  * @param {*} request
@@ -9,7 +7,7 @@ const { createIfSame, getIfSame,
 */
 const createHistoryTravel = (server) => {
   return async (request, reply) => {
-    createIfSame(
+    await createIfSame(
       server, request, "id_case",
       reply, "history_travel", replyJson
     )
@@ -18,9 +16,9 @@ const createHistoryTravel = (server) => {
 
 const getHistoryTravel = (server) => {
   return async (request, reply) => {
-    getIfSame(
+    await funcIfSame(
       server, request, "id_case",
-      reply, "history_travel", replyJson
+      reply, "public_place", "read", replyJson
     )
   }
 }
@@ -36,9 +34,9 @@ const updateHistoryTravel = (server) => {
 
 const deleteHistoryTravel = (server) => {
   return async (request, reply) => {
-    deleteIfSame(
-      server, request, "id_history_travel",
-      reply, "history_travel", replyJson
+    await funcIfSame(
+      server, request, "id_public_place",
+      reply, "public_place", "delete", replyJson
     )
   }
 }
