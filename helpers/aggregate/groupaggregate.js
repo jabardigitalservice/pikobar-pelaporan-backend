@@ -1,256 +1,28 @@
 const groupingCondition = (grouping, criteria) => {
-
+const { sumActive, sumSick, sumCondition } = require("./func")
   const params = {
     $group: {
       _id: grouping,
-      confrimed_active: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$final_result", "4"] },
-                { $eq: ["$status", criteria.CONF] },
-                {
-                  $or: [
-                    { $in: ["$last_history.current_location_type", ["RUMAH","RS", "OTHERS"]] }
-                  ]
-                }
-              ],
-            }, 1, 0]
-        }
-      },
-      confrimed_sick_home: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$final_result", "4"] },
-                { $eq: ["$status", criteria.CONF] },
-                { $eq: ["$last_history.current_location_type", "RUMAH"] },
-              ]
-            }, 1, 0]
-        }
-      },
-      confrimed_sick_hospital: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$final_result", "4"] },
-                { $eq: ["$status", criteria.CONF] },
-                { $in: ["$last_history.current_location_type", ["RS", "OTHERS"]] }
-              ]
-            }, 1, 0]
-        }
-      },
-      confrimed_recovered: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$status", criteria.CONF] },
-                { $eq: ["$final_result", "1"] }
-              ]
-            }, 1, 0]
-        }
-      },
-      confrimed_decease: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$status", criteria.CONF] },
-                { $eq: ["$final_result", "2"] }
-              ]
-            }, 1, 0]
-        }
-      },
-      probable_active: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$final_result", "4"] },
-                { $eq: ["$status", criteria.PROB] },
-                {
-                  $or: [
-                    { $in: ["$last_history.current_location_type", ["RUMAH","RS", "OTHERS"]] }
-                  ]
-                }
-              ],
-            }, 1, 0]
-        }
-      },
-      probable_sick_home: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$final_result", "4"] },
-                { $eq: ["$status", criteria.PROB] },
-                { $eq: ["$last_history.current_location_type", "RUMAH"] },
-              ]
-            }, 1, 0]
-        }
-      },
-      probable_sick_hospital: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$final_result", "4"] },
-                { $eq: ["$status", criteria.PROB] },
-                { $in: ["$last_history.current_location_type", ["RS", "OTHERS"]] }
-              ]
-            }, 1, 0]
-        }
-      },
-      probable_recovered: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$status", criteria.PROB] },
-                { $eq: ["$final_result", "1"] }
-              ]
-            }, 1, 0]
-        }
-      },
-      probable_decease: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$status", criteria.PROB] },
-                { $eq: ["$final_result", "2"] }
-              ]
-            }, 1, 0]
-        }
-      },
-      suspect_active: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$final_result", "4"] },
-                { $eq: ["$status", criteria.SUS] },
-                {
-                  $or: [
-                    { $in: ["$last_history.current_location_type", ["RUMAH","RS", "OTHERS"]] }
-                  ]
-                }
-              ],
-            }, 1, 0]
-        }
-      },
-      suspect_sick_home: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$final_result", "4"] },
-                { $eq: ["$status", criteria.SUS] },
-                { $eq: ["$last_history.current_location_type", "RUMAH"] },
-              ]
-            }, 1, 0]
-        }
-      },
-      suspect_sick_hospital: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$final_result", "4"] },
-                { $eq: ["$status", criteria.SUS] },
-                { $in: ["$last_history.current_location_type", ["RS", "OTHERS"]] }
-              ]
-            }, 1, 0]
-        }
-      },
-      suspect_recovered: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$status", criteria.SUS] },
-                { $eq: ["$final_result", "1"] }
-              ]
-            }, 1, 0]
-        }
-      },
-      suspect_decease: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$status", criteria.SUS] },
-                { $eq: ["$final_result", "2"] }
-              ]
-            }, 1, 0]
-        }
-      },
-      closecontact_active: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$final_result", "4"] },
-                { $eq: ["$status", criteria.CLOSE] },
-                {
-                  $or: [
-                    { $in: ["$last_history.current_location_type", ["RUMAH","RS", "OTHERS"]] }
-                  ]
-                }
-              ],
-            }, 1, 0]
-        }
-      },
-      closecontact_sick_home: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$final_result", "4"] },
-                { $eq: ["$status", criteria.CLOSE] },
-                { $eq: ["$last_history.current_location_type", "RUMAH"] },
-              ]
-            }, 1, 0]
-        }
-      },
-      closecontact_sick_hospital: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$final_result", "4"] },
-                { $eq: ["$status", criteria.CLOSE] },
-                { $in: ["$last_history.current_location_type", ["RS", "OTHERS"]] }
-              ]
-            }, 1, 0]
-        }
-      },
-      closecontact_recovered: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$status", criteria.CLOSE] },
-                { $eq: ["$final_result", "1"] }
-              ]
-            }, 1, 0]
-        }
-      },
-      closecontact_decease: {
-        $sum: {
-          $cond: [
-            {
-              $and: [
-                { $eq: ["$status", criteria.CLOSE] },
-                { $eq: ["$final_result", "2"] }
-              ]
-            }, 1, 0]
-        }
-      }
+      confrimed_active: sumActive(criteria.CONF),
+      confrimed_sick_home: sumSick(criteria.CONF, "RUMAH"),
+      confrimed_sick_hospital: sumSick(criteria.CONF, ["RS","OTHERS"]),
+      confrimed_recovered: sumCondition(criteria.CONF, "1"),
+      confrimed_decease: sumCondition(criteria.CONF, "2"),
+      probable_active: sumActive(criteria.PROB),
+      probable_sick_home: sumSick(criteria.PROB, "RUMAH"),
+      probable_sick_hospital: sumSick(criteria.PROB, ["RS","OTHERS"]),
+      probable_recovered: sumCondition(criteria.PROB, "1"),
+      probable_decease: sumCondition(criteria.PROB, "2"),
+      suspect_active: sumActive(criteria.SUS),
+      suspect_sick_home: sumSick(criteria.SUS, "RUMAH"),
+      suspect_sick_hospital: sumSick(criteria.SUS, ["RS","OTHERS"]),
+      suspect_recovered: sumCondition(criteria.SUS, "1"),
+      suspect_decease: sumCondition(criteria.SUS, "2"),
+      closecontact_active: sumActive(criteria.CLOSE),
+      closecontact_sick_home: sumSick(criteria.CLOSE, "RUMAH"),
+      closecontact_sick_hospital: sumSick(criteria.CLOSE, ["RS","OTHERS"]),
+      closecontact_recovered: sumCondition(criteria.CLOSE, "1"),
+      closecontact_decease: sumCondition(criteria.CLOSE, "2")
     }
   }
 
