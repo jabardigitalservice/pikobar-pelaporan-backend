@@ -34,14 +34,6 @@ const deleteInspectionSupport = (server) => {
       reply, "inspection_support", "delete", replyJson
     )
   }
-  return (request, reply) => {
-    server.methods.services.inspection_support.delete(
-      request.params.id_inspection_support,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
-    )
-  }
 }
 module.exports = {
   createInspectionSupport,

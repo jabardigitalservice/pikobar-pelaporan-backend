@@ -1,48 +1,37 @@
 const { replyJson } = require('../helpers')
+const { createIfSame, updateIfSame, funcIfSame } = require('../../helpers/request')
 const createCaseExposure = (server) => {
-  return (request, reply) => {
-    server.methods.services.case_exposure.create(
-      request.payload,
-      request.params.id_case,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    await createIfSame(
+      server, request, "id_case",
+      reply, "case_exposure", replyJson
     )
   }
 }
 
 const getCaseExposure = (server) => {
-  return (request, reply) => {
-    const { id_case } = request.params
-    server.methods.services.case_exposure.read(
-      id_case,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    await funcIfSame(
+      server, request, "id_case",
+      reply, "case_exposure", "read", replyJson
     )
   }
 }
 
 const updateCaseExposure = (server) => {
-  return (request, reply) => {
-    const { id_case_exposure } = request.params
-    server.methods.services.case_exposure.update(
-      id_case_exposure,
-      request.payload,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    await updateIfSame(
+      server, request, "id_case_exposure",
+      reply, "case_exposure", replyJson
     )
   }
 }
 
 const deleteCaseExposure = (server) => {
-  return (request, reply) => {
-    server.methods.services.case_exposure.delete(
-      request.params.id_case_exposure,
-      (err, result) => {
-        replyJson(err, result, reply)
-      }
+  return async (request, reply) => {
+    await funcIfSame(
+      server, request, "id_case_exposure",
+      reply, "case_exposure", "delete", replyJson
     )
   }
 }
