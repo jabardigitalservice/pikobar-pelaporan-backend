@@ -8,9 +8,9 @@ module.exports = (server) => {
       method: 'GET',
       path: '/inject/last-history',
       config: {
-        auth: 'jwt',
         description: 'inject last history',
         tags: ['api', 'health for inject'],
+        auth: 'jwt',
         pre: [ CheckRoleView ]
       },
       handler: handlers.injectLastHistory
