@@ -3,6 +3,7 @@ module.exports = (server) =>{
   const handlers = require('./handlers')(server)
   const getCasebyId = require('../../cases/route_prerequesites').getCasebyId(server)
   const CheckRoleCreate = require('../../users/route_prerequesites').CheckRoleCreate(server)
+  const checkCaseIsExists = require('../../cases/route_prerequesites').checkCaseIsExists(server)
   const countCaseByDistrict = require('../../cases/route_prerequesites').countCaseByDistrict(server)
   const countCasesOutsideWestJava = require('./route_prerequesites').countCasesOutsideWestJava(server)
   const countCasePendingByDistrict = require('../../cases/route_prerequesites').countCasePendingByDistrict(server)
@@ -18,6 +19,7 @@ module.exports = (server) =>{
         validate: inputValidations.RequestPayload,
         pre: [
           CheckRoleCreate,
+          checkCaseIsExists,
           countCaseByDistrict,
           countCasesOutsideWestJava,
           countCasePendingByDistrict,

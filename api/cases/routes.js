@@ -186,7 +186,8 @@ module.exports = (server) =>{
                     CheckRoleUpdate,
                     countCaseByDistrict,
                     countCasePendingByDistrict,
-                    getCasebyId
+                    getCasebyId,
+                    checkCaseIsExists,
                 ]
             },
             handler: handlers.UpdateCase
