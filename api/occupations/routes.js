@@ -1,5 +1,5 @@
 module.exports = (server) => {
-  const handlers = require('./handlers')(server)
+  const handlers = require('./handlers')
 
   return [
     {
@@ -10,7 +10,7 @@ module.exports = (server) => {
         description: 'show occupations',
         tags: ['api', 'occupations'],
       },
-      handler: handlers.ListOccupation
+      handler: handlers.ListOccupation(server)
     },
     {
       method: 'GET',
@@ -20,7 +20,7 @@ module.exports = (server) => {
         description: 'show detail occupation',
         tags: ['api', 'occupations'],
       },
-      handler: handlers.GetOccupationDetail
+      handler: handlers.GetOccupationDetail(server)
     }
   ]
 }

@@ -1,6 +1,6 @@
 const Occupation = require('../models/Occupation')
 
-const getOccupationList = async (request, callback) => {
+const getOccupationList = async (callback) => {
   try {
     const result = await Occupation.find().sort({ seq: 'asc' })
     callback(null, result.map(q => q.toJSONFor()))
