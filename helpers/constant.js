@@ -57,8 +57,7 @@ module.exports = {
     GREATHER_150MINUTE: 'Latihan fisik > 150 menit'
   },
   DIAGNOSIS:{
-    HIGH_TEMPERATURE: "Suhu tubuh >= 38 °C",
-    LOW_TEMPERATURE: "Suhu tubuh < 38 °C",
+    FEVER: "DEMAM",
     COUGH: "Batuk",
     FLU: "Pilek",
     SORE_THROAT: "Sakit Tenggorokan",

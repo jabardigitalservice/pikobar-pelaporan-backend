@@ -176,8 +176,7 @@ const rollback = async (schema, insertedIds) => {
 
 const checkDiagnosis = (data) => {
   return {
-    "Suhu tubuh >= 38 °C" : yesOrNoBool(data.includes(DIAGNOSIS.HIGH_TEMPERATURE)),
-    "Suhu tubuh < 38 °C": yesOrNoBool(data.includes(DIAGNOSIS.LOW_TEMPERATURE)),
+    "Demam" : yesOrNoBool(data.includes(DIAGNOSIS.FEVER)),
     "Batuk": yesOrNoBool(data.includes(DIAGNOSIS.COUGH)),
     "Pilek": yesOrNoBool(data.includes(DIAGNOSIS.FLU)),
     "Sakit Tenggorokan": yesOrNoBool(data.includes(DIAGNOSIS.SORE_THROAT)),
