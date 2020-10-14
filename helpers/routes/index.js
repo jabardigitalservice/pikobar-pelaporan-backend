@@ -31,4 +31,18 @@ const roles = (server) => {
   }
 }
 
-module. exports = { configRoute, configWithValidation, roles }
+const route = (method, path, description, handlers, role) => {
+  return {
+    method: method,
+    path: path,
+    config: {
+      description: `${method} ${description}`,
+      tags: ['api', description],
+      pre: [ role ],
+      auth: 'jwt',
+    },
+    handler: handlers,
+  }
+}
+
+module. exports = { configRoute, configWithValidation, roles, route }

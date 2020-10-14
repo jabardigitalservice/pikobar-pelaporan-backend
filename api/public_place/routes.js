@@ -1,22 +1,20 @@
-module.exports = (server, handlers, roles) => {
-  const route = (method, path, callback, role) => {
-    return {
-      method: method,
-      path: path,
-      config: {
-        description: `${method} public-place`,
-        tags: ['api', 'public-place'],
-        pre: [ role ],
-        auth: 'jwt',
-      },
-      handler: handlers[callback](server),
-    }
-  }
-
+module.exports = (server, handlers, roles, route) => {
   return [
-    route('GET', '/public-place/{id_case}', 'getPublicPlace', roles(server).view),
-    route('POST', '/public-place/{id_case}', 'createPublicPlace', roles(server).create),
-    route('PUT', '/public-place/{id_public_place}', 'updatePublicPlace', roles(server).update),
-    route('DELETE', '/public-place/{id_public_place}', 'deletePublicPlace', roles(server).delete),
+    route(
+      'GET', '/public-place/{id_case}', 'public-place',
+      handlers.getPublicPlace(server), roles(server).view
+    ),
+    route(
+      'POST', '/public-place/{id_case}', 'public-place',
+      handlers.createPublicPlace(server), roles(server).create
+    ),
+    route(
+      'PUT', '/public-place/{id_public_place}', 'public-place',
+      handlers.updatePublicPlace(server), roles(server).update
+    ),
+    route(
+      'DELETE', '/public-place/{id_public_place}', 'public-place',
+      handlers.deletePublicPlace(server), roles(server).delete
+    ),
   ]
 }

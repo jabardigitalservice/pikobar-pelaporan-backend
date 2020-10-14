@@ -18,7 +18,7 @@ const getHistoryTravel = (server) => {
   return async (request, reply) => {
     await funcIfSame(
       server, request, "id_case",
-      reply, "public_place", "read", replyJson
+      reply, "history_travel", "read", replyJson
     )
   }
 }
@@ -35,8 +35,8 @@ const updateHistoryTravel = (server) => {
 const deleteHistoryTravel = (server) => {
   return async (request, reply) => {
     await funcIfSame(
-      server, request, "id_public_place",
-      reply, "public_place", "delete", replyJson
+      server, request, "id_history_travel",
+      reply, "history_travel", "delete", replyJson
     )
   }
 }
