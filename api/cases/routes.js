@@ -161,19 +161,6 @@ module.exports = (server) =>{
             handler: handlers.ListCaseExport
         },
 
-        // Export Case to epidemiological investigation Form (PDF)
-        {
-            method: 'GET',
-            path: '/cases/{id}/export-to-pe-form',
-            config: {
-                auth: 'jwt',
-                description: 'Export Case to epidemiological investigation Form',
-                tags: ['api', 'epidemiological.investigation.form'],
-                pre: [ getCasebyId ],
-            },
-            handler: handlers.EpidemiologicalInvestigationForm
-        },
-
         // Update case
         {
             method: 'PUT',

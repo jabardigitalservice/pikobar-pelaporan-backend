@@ -1,4 +1,3 @@
-const pdfmaker = require('../../helpers/pdfmaker')
 const replyHelper = require('../helpers')
 const json2xls = require('json2xls');
 const moment = require('moment')
@@ -197,23 +196,6 @@ module.exports = (server) => {
                 reply(xlsx)
                 .header('Content-Disposition', 'attachment; filename='+fileName);
                 return fs.unlinkSync(fileName);
-            })
-        },
-        /**
-         * GET /api/cases/{id}/pdf
-         * @param {*} request
-         * @param {*} reply
-         */
-        async EpidemiologicalInvestigationForm(request, reply){
-            const detailCase = request.pre.cases
-            const caseName = detailCase.name.replace(/[\W_]+/g, '-')
-            server.methods.services.cases.epidemiologicalInvestigationForm(
-                detailCase,
-                async (err, result) => {
-                if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
-                const fileName = `FORMULIR-PE-${caseName}-${moment().format("YYYY-MM-DD-HH-mm")}.pdf`
-                const pdfFile = await pdfmaker.generate(result, fileName)
-                return reply(pdfFile).header('Content-Disposition', 'attachment; filename='+fileName)
             })
         },
         /**

@@ -35,14 +35,14 @@ const relatedPayload = (v, idCaseRegistrant, granted) => {
   return {
     id_case: v.id_case,
     id_case_registrant: idCaseRegistrant,
-    is_west_java: true,
+    is_west_java: v.is_west_java,
     status: v.status,
-    relation: null,
-    relation_others: null,
-    activity: null,
-    activity_others: null,
-    first_contact_date: null,
-    last_contact_date: null,
+    relation: v.relation,
+    relation_others: v.relation_others,
+    activity: v.activity,
+    activity_others: v.activity_others,
+    first_contact_date: v.first_contact_date,
+    last_contact_date: v.last_contact_date,
     is_access_granted: granted,
   }
 }

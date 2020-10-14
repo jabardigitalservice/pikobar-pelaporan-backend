@@ -1,22 +1,9 @@
 const moment = require('moment')
+const { transformAge } = require('../../helper')
 const { CRITERIA } = require('../../../constant')
 const render = (data) => {
-  let age = 0
-  let ageInMonths = 0
-
-  /*
-   * Age in db is in decimal
-   * birth_date isn't mandatory.
-   * if birth_date is exists, count from this date to make it more accurate
-   * if birth_date not exists, simply use the decimal data which is quite risky due to its accuracy
-   */
-  if (data.birth_date) {
-    age = moment().diff(data.birth_date, 'years')
-    ageInMonths = moment().diff(data.birth_date, 'months')
-  } else {
-    age = parseInt(data.age) || 0
-    ageInMonths = Math.round((Number(data.age) - age) * 12)
-  }
+  const age = transformAge(data)['age']
+  const ageInMonths = transformAge(data)['ageInMonths']
 
   return {
       style: 'tableExample',
@@ -81,7 +68,7 @@ const render = (data) => {
           ],
           [
             { text: `Tgl lahir: ${data.birth_date ? moment(data.birth_date).format('YYYY/MM/DD') : '-' }` },
-            { text: `Umur: ${age} tahun, ${ageInMonths < 12 ? ageInMonths : ageInMonths%12 } bulan` },
+            { text: `Umur: ${age} tahun, ${ageInMonths} bulan` },
             { text: `${data.gender === 'L' ? '[√]' : '[  ]'} Laki-laki
               ${data.gender === 'P' ? '[√]' : '[  ]'} Perempuan` },
             { text: 'Pekerjaan: ' + (data.occupation || '-') },

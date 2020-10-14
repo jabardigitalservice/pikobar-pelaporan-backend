@@ -101,13 +101,13 @@ const render = (data) => {
       return false
     }
 
-    records = records.close_contact_premier
+    records = records.closeContacts
     if (!records || !records.length) {
       return false
     }
 
     records.forEach(v => {
-      if (criterias.includes(v.close_contact_criteria)) {
+      if (criterias.includes(v.status)) {
         res = true
       }
     })
@@ -119,20 +119,20 @@ const render = (data) => {
     let res = []
 
     let records = []
-    if (data && data.close_contact_premier) {
-      records = data.close_contact_premier
+    if (data && data.closeContacts) {
+      records = data.closeContacts
     }
 
     for (i in records) {
       const rec = records[i]
-      if (!criterias.includes(rec.close_contact_criteria)) continue
+      if (!criterias.includes(rec.status)) continue
 
       res.push([
-          { alignment: 'left', text: rec.close_contact_name || '-' },
-          { alignment: 'left', text: rec.close_contact_address_street || '-' },
-          { alignment: 'center', text: rec.close_contact_relation || '-' },
-          { alignment: 'center', text: formattedDate(rec.close_contact_first_date) },
-          { alignment: 'center', text: formattedDate(rec.close_contact_last_date) },
+          { alignment: 'left', text: rec.name || '-' },
+          { alignment: 'left', text: rec.address_street || '-' },
+          { alignment: 'center', text: rec.relation || '-' },
+          { alignment: 'center', text: formattedDate(rec.first_contact_date) },
+          { alignment: 'center', text: formattedDate(rec.last_contact_date) },
       ])
     }
 

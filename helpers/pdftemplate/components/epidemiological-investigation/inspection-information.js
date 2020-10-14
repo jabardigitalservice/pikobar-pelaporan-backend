@@ -9,7 +9,7 @@ const groupByType = (data) => {
   const records = data.inspection_support || []
 
   records.forEach(x => {
-    const type = x.specimens_type
+    const type = x.specimens_type.toLowerCase()
     if (!inspects[type]) {
       inspects[type] = []
     }
@@ -20,6 +20,8 @@ const groupByType = (data) => {
 const buildRow = (row, label, prop) => {
   let inspectOne = {}
   let inspectTwo = {}
+
+  prop = prop.toLowerCase()
 
   if (inspects[prop] && inspects[prop][0]){
     inspectOne = inspects[prop][0]
