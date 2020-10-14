@@ -1,5 +1,4 @@
 const { replyJson } = require('../helpers')
-const { funcIfSame } = require('../../helpers/request')
 /**
  * /api/occupations
  * @param {*} request

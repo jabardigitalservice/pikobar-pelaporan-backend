@@ -1,26 +1,12 @@
-module.exports = (server) => {
-  const handlers = require('./handlers')
-
+module.exports = (server, handlers, roles, route) => {
   return [
-    {
-      method: 'GET',
-      path: '/occupations',
-      config: {
-        auth: 'jwt',
-        description: 'show occupations',
-        tags: ['api', 'occupations'],
-      },
-      handler: handlers.ListOccupation(server)
-    },
-    {
-      method: 'GET',
-      path: '/occupations/{id}',
-      config: {
-        auth: 'jwt',
-        description: 'show detail occupation',
-        tags: ['api', 'occupations'],
-      },
-      handler: handlers.GetOccupationDetail(server)
-    }
+    route(
+      'GET', '/occupations', 'occupations',
+      handlers.ListOccupation(server), roles(server).view
+    ),
+    route(
+      'GET', '/occupations/{id}', 'occupations',
+      handlers.GetOccupationDetail(server), roles(server).view
+    )
   ]
 }

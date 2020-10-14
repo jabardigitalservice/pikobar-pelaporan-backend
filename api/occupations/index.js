@@ -1,7 +1,8 @@
 const Routes = require('./routes')
-
+const handlers = require('./handlers')
+const { roles, route } = require('../../helpers/routes')
 const register = (server, options, next) => {
-  server.route(Routes(server))
+  server.route(Routes(server, handlers, roles, route))
   return next()
 }
 
