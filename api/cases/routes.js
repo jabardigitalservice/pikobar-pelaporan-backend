@@ -1,7 +1,6 @@
 module.exports = (server) =>{
     const handlers = require('./handlers')(server)
     const inputValidations = require('./validations/input')
-    const outputValidations = require('./validations/output')
 
     const CheckRoleView = require('../users/route_prerequesites').CheckRoleView(server)
     const CheckRoleCreate = require('../users/route_prerequesites').CheckRoleCreate(server)
