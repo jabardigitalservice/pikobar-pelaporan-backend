@@ -1,7 +1,4 @@
-module.exports = (server) => {
-  const handlers = require('./handlers')
-  const { roles } = require("../../helpers/routes")
-
+module.exports = (server, handlers, roles) => {
   const route = (method, path, callback, role) => {
     return {
       method: method,
