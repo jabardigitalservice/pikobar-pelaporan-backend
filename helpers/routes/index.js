@@ -31,7 +31,7 @@ const roles = (server) => {
   }
 }
 
-const route = (method, path, description, handlers, role) => {
+function route(method, path, description, handlers, role) {
   return {
     method: method,
     path: path,
