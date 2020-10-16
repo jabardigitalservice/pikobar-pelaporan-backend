@@ -1,32 +1,12 @@
-module.exports = (server) => {
-  const handlers = require('./handlers')(server)
-  const CheckRoleView = require('../users/route_prerequesites').CheckRoleView(server)
-  const CheckRoleCreate = require('../users/route_prerequesites').CheckRoleCreate(server)
-
+module.exports = (server, handlers, roles, route) => {
   return [
-    {
-      method: 'GET',
-      path: '/inject/last-history',
-      config: {
-        description: 'inject last history',
-        tags: ['api', 'health for inject'],
-        auth: 'jwt',
-        pre: [ CheckRoleView ]
-      },
-      handler: handlers.injectLastHistory
-    },
-    {
-      method: 'POST',
-      path: '/inject/rdt',
-      config: {
-        auth: 'jwt',
-        description: 'inject data rdt from excel or spredsheet',
-        tags: ['api', 'rdt'],
-        pre: [
-          CheckRoleCreate
-        ]
-      },
-      handler: handlers.injectRdtTest
-    },
+    route(
+      'POST', '/inject/rdt', 'inject data rdt from excel or spredsheet',
+      handlers.injectRdtTest(server), roles(server).create
+    ),
+    route(
+      'GET', '/inject/last-history', 'health for inject last history',
+      handlers.injectLastHistory(server), roles(server).view
+    )
   ]
 }
