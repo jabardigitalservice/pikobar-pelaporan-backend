@@ -4,33 +4,10 @@ const { doFlagging } = require('../helpers/cases/flagger')
 const aggregatePaginate = require('mongoose-aggregate-paginate-v2')
 const uniqueValidator = require('mongoose-unique-validator')
 
-const sectionStatus = {
-  status_identity: { type: Number, default: 0 },
-  status_clinical: { type: Number, default: 0 },
-  status_inspection_support: { type: Number, default: 0 },
-  status_travel_import: { type: Number, default: 0 },
-  status_travel_local: { type: Number, default: 0 },
-  status_travel_public: { type: Number, default: 0 },
-  status_transmission: { type: Number, default: 0 },
-  status_exposurecontact: { type: Number, default: 0 },
-  status_closecontact: { type: Number, default: 0 },
-}
-
-const refRelatedCase = [{
-  _id: false,
-  id_case: { type: String, default: null },
-  id_case_registrant: { type: String, default: null },
-  is_west_java: { type: Boolean, default: true },
-  status: { type: String, default: null },
-  relation: { type: String, default: null },
-  relation_others: { type: String, default: null },
-  activity: { type: Array, default: [] },
-  activity_others: { type: String, default: null },
-  first_contact_date: { type: Date, default: null },
-  last_contact_date: { type: Date, default: null },
-  is_access_granted: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now() },
-}]
+const {
+  sectionStatus,
+  refRelatedCase,
+} = require('./attributes')
 
 const CaseSchema = new mongoose.Schema({
   // (NIK/Nomor Kasus) ex : covid_kodeprovinsi_kodekota/kab_nokasus

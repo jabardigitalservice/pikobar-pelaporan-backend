@@ -2,6 +2,7 @@ const moment = require('moment')
 const service = 'services.v2.cases'
 const User = require('../models/User')
 const Case = require('../models/Case')
+const Helper = require('../helpers/custom')
 const ObjectId = require('mongodb').ObjectID
 const History = require('../models/History')
 const pdfmaker = require('../helpers/pdfmaker')
@@ -11,6 +12,9 @@ const Validate = require('../helpers/cases/revamp/handlerpost')
 const { VERIFIED_STATUS, ROLE } = require('../helpers/constant')
 
 const createCase = async (pre, payload, author, callback) => {
+  // guarded fields
+  Helper.deleteProps(['_id', 'id_case', 'verified_status'], payload)
+
   try {
     const idCase = Validate.generateIdCase(author, pre, payload)
     const unitName = author.unit_id ? author.unit_id.name : null
@@ -36,6 +40,7 @@ const createCase = async (pre, payload, author, callback) => {
       fasyankes_village_name: author.address_village_name,
       assignment_place: unitName,
       status_identity: 1,
+      status_clinical: 1,
       ...payload,
     })
 

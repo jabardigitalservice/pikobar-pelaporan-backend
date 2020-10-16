@@ -60,6 +60,7 @@ const filterNodes = (this_) => {
 
   return nodes
 }
+
 module.exports = {
   filterEdges, filterNodes
 }

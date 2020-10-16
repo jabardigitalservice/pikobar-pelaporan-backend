@@ -3,6 +3,7 @@ const Case = require('../models/Case')
 const Helper = require('../helpers/custom')
 const { rollback } = require('../helpers/custom')
 const { CRITERIA } = require('../helpers/constant')
+const { preCountCase } = require('../helpers/cases/prerequesites')
 const {
   append,
   relatedPayload,
@@ -99,9 +100,10 @@ const create = async (services, pre, author, payload, callback) => {
       if (req.id_case || req.nik) {
         // (is_access_granted = false)
         // if this related case founded, update & append this case as an embeded object to this related case
-        foundedCase = await append(embedField, Case, req, relatedPayload(thisCase, idCaseRegistrant, false))
+        foundedCase = await append(embedField, Case, req, relatedPayload(req, author, thisCase, idCaseRegistrant, false))
         if (foundedCase) {
           req.id_case = foundedCase.id_case
+          req.author_district_code = foundedCase.author_district_code
         }
       }
 
@@ -117,6 +119,8 @@ const create = async (services, pre, author, payload, callback) => {
           current_location_type: 'OTHERS',
           [embedField]: {
             ...relatedPayload(
+              req,
+              author,
               thisCase,
               idCaseRegistrant,
               false,
@@ -126,40 +130,16 @@ const create = async (services, pre, author, payload, callback) => {
         }
 
         // prerequisites per-premierCase to creating new case
-        const pre = {
-          count_case: {},
-          count_case_pending: {},
-          case_count_outside_west_java: {},
-        }
+        const pre = await preCountCase(services, req.address_district_code)
 
-        await services.cases.getCountByDistrict(
-          req.address_district_code,
-          (err, res) => {
-            if (err) throw new Error
-            pre.count_case = res
-          })
-
-        await services.cases.getCountPendingByDistrict(
-          req.address_district_code,
-          (err, res) => {
-            if (err) throw new Error
-            pre.count_case_pending = res
-          })
-
-        await services.v2.cases.getCaseCountsOutsideWestJava(
-          author.code_district_city,
-          (err, res) => {
-            if (err) throw new Error
-            pre.case_count_outside_west_java = res
-          })
-
-        await services.cases_revamp.create(
-          services, createCasePayload, author, pre,
+        await services.v2.cases.create(
+          pre, createCasePayload, author,
           (err, res) => {
             if (err) throw new Error
 
             insertedCase = res
             req.id_case = res.id_case
+            req.author_district_code = res.author_district_code
             result.push(insertedCase)
             insertedIds.push(insertedCase)
           })
@@ -169,7 +149,7 @@ const create = async (services, pre, author, payload, callback) => {
       }
 
       // append this related case as an appended object to this case (is_access_granted = true)
-      await append(appendField, Case, thisCase, relatedPayload(req, idCaseRegistrant, true))
+      await append(appendField, Case, thisCase, relatedPayload(req, author, req, idCaseRegistrant, true))
 
     } catch (e) {
       rollback(Case, insertedIds)

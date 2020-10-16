@@ -31,19 +31,26 @@ const append = async (state, schema, req, cases) => {
   return founded
 }
 
-const relatedPayload = (v, idCaseRegistrant, granted) => {
+const relatedPayload = (payload, author, v, idCaseRegistrant, granted) => {
   return {
     id_case: v.id_case,
     id_case_registrant: idCaseRegistrant,
     is_west_java: v.is_west_java,
+    name: v.name,
+    address_district_code: v.address_district_code,
     status: v.status,
-    relation: v.relation,
-    relation_others: v.relation_others,
-    activity: v.activity,
-    activity_others: v.activity_others,
-    first_contact_date: v.first_contact_date,
-    last_contact_date: v.last_contact_date,
+    author: v.author || author,
+    author_district_code: v.author_district_code,
+    createdAt: v.createdAt,
+    relation: payload.relation,
+    relation_others: payload.relation_others,
+    activity: payload.activity,
+    activity_others: payload.activity_others,
+    first_contact_date: payload.first_contact_date,
+    last_contact_date: payload.last_contact_date,
     is_access_granted: granted,
+    related_by: author._id,
+    related_at: new Date(),
   }
 }
 
