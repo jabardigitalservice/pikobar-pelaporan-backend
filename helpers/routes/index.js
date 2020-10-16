@@ -31,12 +31,13 @@ const roles = (server) => {
   }
 }
 
-function route(method, path, description, handlers, role) {
+const route = (method, path, handlers, role) => {
+  const description = `${method} ${path}`
   return {
     method: method,
     path: path,
     config: {
-      description: `${method} ${description}`,
+      description: description,
       tags: ['api', description],
       pre: [ role ],
       auth: 'jwt',
