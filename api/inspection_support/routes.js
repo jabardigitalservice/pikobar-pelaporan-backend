@@ -1,23 +1,20 @@
-module.exports = (server, handlers, roles) => {
-
-  const route = (method, path, callback, role) => {
-    return {
-      method: method,
-      path: path,
-      config: {
-        description: `${method} inspection-support`,
-        tags: ['api', 'inspection-support'],
-        pre: [ role ],
-        auth: 'jwt',
-      },
-      handler: handlers[callback](server),
-    }
-  }
-
+module.exports = (server, handlers, roles, route) => {
   return [
-    route('GET', '/inspection-support/{id_case}', 'getInspectionSupport', roles(server).view),
-    route('POST', '/inspection-support/{id_case}', 'createInspectionSupport', roles(server).create),
-    route('PUT', '/inspection-support/{id_inspection_support}', 'updateInspectionSupport', roles(server).update),
-    route('DELETE', '/inspection-support/{id_inspection_support}', 'deleteInspectionSupport', roles(server).delete),
+    route(
+      'POST', '/inspection-support/{id_case}', 'inspection-support',
+      handlers.createInspectionSupport(server), roles(server).create
+    ),
+    route(
+      'GET', '/inspection-support/{id_case}', 'inspection-support',
+      handlers.getInspectionSupport(server), roles(server).view
+    ),
+    route(
+      'DELETE', '/inspection-support/{id_inspection_support}', 'inspection-support',
+      handlers.deleteInspectionSupport(server), roles(server).delete
+    ),
+    route(
+      'PUT', '/inspection-support/{id_inspection_support}', 'inspection-support',
+      handlers.updateInspectionSupport(server), roles(server).update
+    )
   ]
 }
