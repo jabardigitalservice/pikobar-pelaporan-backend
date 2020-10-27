@@ -34,17 +34,5 @@ const funcNoParam = async (server, name, methods, reply, replyJson) => {
   )
 }
 
-const funcCreate = async (server, name, methods, request, reply, replyJson) => {
-  server.methods.services[name][methods](
-    request,
-    (err, result) => {
-      replyJson(err, result, reply)
-    }
-  )
-}
-
-module.exports = {
-  funcIfSame, queryIfSame, queryParamSame, funcNoParam,
-  funcCreate
-}
+module.exports = { funcIfSame, queryIfSame, queryParamSame, funcNoParam }
 
