@@ -1,40 +1,28 @@
-const replyHelper = require('../helpers')
+const { replyJson } = require('../helpers')
+const { funcNoParam } = require('../../helpers/request')
 
-module.exports = (server) => {
-    function constructAreasResponse(country) {
-        let jsonCountry = {
-            status: 200,
-            message: "Success",
-            data: country
-        }
-        return jsonCountry
-    }
-
-    return {
-        /**
-         * GET /api/country
-         * @param {*} request
-         * @param {*} reply
-         */
-        async listCountry(request, reply) {
-            server.methods.services.country.getCountryList(
-                (err, result) => {
-                    if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
-                    return reply(
-                        constructAreasResponse(result)
-                    ).code(200)
-                }
-            )
-        },
-        async listMenu(request, reply) {
-            server.methods.services.country.getMenuList(
-                (err, result) => {
-                    if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
-                    return reply(
-                        constructAreasResponse(result)
-                    ).code(200)
-                }
-            )
-        },
-    } //end
+/**
+ * GET /api/country
+ */
+const listCountry = (server) => {
+  return async (_request, reply) => {
+    await funcNoParam(
+      server, "country", "getCountryList",
+      reply, replyJson
+    )
+  }
 }
+
+/**
+ * GET /api/menu
+ */
+const listMenu = (server) => {
+  return async (_request, reply) => {
+    await funcNoParam(
+      server, "country", "getMenuList",
+      reply, replyJson
+    )
+  }
+}
+
+module.exports = { listCountry, listMenu }
