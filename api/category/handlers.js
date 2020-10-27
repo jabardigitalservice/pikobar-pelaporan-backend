@@ -1,55 +1,49 @@
-const replyHelper = require('../helpers')
+const { replyJson } = require('../helpers')
+const { funcCreate, funcNoParam, funcIfSame } = require('../../helpers/request')
 
-module.exports = (server) => {
-    function constructCategoryResponse(category) {
-        let jsonCategory = {
-            status: 200,
-            message: "Success",
-            data: category
-        }
-        return jsonCategory
-    }
+/**
+ * /api/category
+ * @param {*} request
+ * @param {*} reply
+*/
 
-    return {
-        /**
-         * GET /api/category
-         * @param {*} request
-         * @param {*} reply
-         */
-        async createCategory(request,reply){
-            server.methods.services.category.create(request,(err, result) => {
-                if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
-                return reply(
-                    constructCategoryResponse(result,request)
-                ).code(200)
-                }
-            )
-        },
-        async getListTarget(request,reply){
-            server.methods.services.category.list((err, result) => {
-                if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
-                return reply(
-                    constructCategoryResponse(result,request)
-                ).code(200)
-                }
-            )
-        },
-        async getListTargetByCategory(request,reply){
-            server.methods.services.category.listTargetByCategory(request.params.id,(err, result) => {
-                    if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
-                    return reply(
-                        constructCategoryResponse(result)
-                    ).code(200)
-                }
-            )
-        },
-        async getTypeSpeciment(request, reply){
-            server.methods.services.category.typeSpeciment((err, result) =>{
-                if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
-                return reply(
-                    constructCategoryResponse(result)
-                ).code(200)
-            })
-        }
-    }
+const createCategory = (server) => {
+  return async (request, reply) => {
+    await funcCreate(
+      server, "category", "create",
+      request, reply, replyJson
+    )
+  }
+}
+
+const getListTarget = (server) => {
+  return async (_request, reply) => {
+    await funcNoParam(
+      server, "category", "list",
+      reply, replyJson
+    )
+  }
+}
+
+const getListTargetByCategory = (server) => {
+  return async (request, reply) => {
+    await funcIfSame(
+      server, "category", "listTargetByCategory",
+      request, "id", reply, replyJson
+    )
+  }
+}
+
+const getTypeSpeciment = (server) => {
+  return async (_request, reply) => {
+    await funcNoParam(
+      server, "category", "typeSpeciment",
+      reply, replyJson
+    )
+  }
+}
+
+module.exports = {
+  createCategory, getTypeSpeciment,
+  getListTarget, getListTargetByCategory
 }

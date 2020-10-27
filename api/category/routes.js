@@ -1,57 +1,32 @@
-module.exports = (server) =>{
-    const handlers = require('./handlers')(server)
-    const CheckRoleView = require('../users/route_prerequesites').CheckRoleView(server)
-
-    return [
-        {
-            method: 'POST',
-            path: '/category-target',
-            config: {
-                auth: 'jwt',
-                description: 'create category',
-                tags: ['api', 'category-target']
-            },
-            handler: handlers.createCategory
-        },
-        {
-            method: 'GET',
-            path: '/category-target',
-            config: {
-                auth: 'jwt',
-                description: 'show target by category',
-                tags: ['api', 'category-target'],
-                pre: [
-                    CheckRoleView
-                ]
-            },
-            handler: handlers.getListTarget
-        },
-        {
-            method: 'GET',
-            path: '/category-target/{id}',
-            config: {
-                auth: 'jwt',
-                description: 'show target by category',
-                tags: ['api', 'category-target'],
-                pre: [
-                    CheckRoleView
-                ]
-            },
-            handler: handlers.getListTargetByCategory
-        },
-        {
-            method: 'GET',
-            path: '/type-specimens',
-            config: {
-                auth: 'jwt',
-                description: 'type Specimens',
-                tags: ['api', 'type-specimens'],
-                pre: [
-                    CheckRoleView
-                ]
-            },
-            handler: handlers.getTypeSpeciment
-        }
-    ]
-
+module.exports = (server) => {
+  const handlers = require('./handlers')
+  const CheckRoleView = require('../users/route_prerequesites').CheckRoleView(server)
+  const CheckRoleCreate = require('../users/route_prerequesites').CheckRoleCreate(server)
+  const { configRoute} = require("../../helpers/routes")
+  return [
+    {
+      method: 'GET',
+      path: '/category-target',
+      config: configRoute("show target by category", "category-target", CheckRoleView),
+      handler: handlers.getListTarget(server)
+    },
+    {
+      method: 'GET',
+      path: '/category-target/{id}',
+      config: configRoute("show target by category", "category-target", CheckRoleView),
+      handler: handlers.getListTargetByCategory(server)
+    },
+    {
+      method: 'GET',
+      path: '/type-specimens',
+      config: configRoute("type Specimens", "category-target", CheckRoleView),
+      handler: handlers.getTypeSpeciment(server)
+    },
+    {
+      method: 'POST',
+      path: '/category-target',
+      config: configRoute("create category", "category-target", CheckRoleCreate),
+      handler: handlers.createCategory(server)
+    }
+  ]
 }
