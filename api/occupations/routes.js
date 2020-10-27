@@ -1,7 +1,7 @@
 module.exports = (server) => {
+  const { configRoute } = require("../../helpers/routes")
   const handlers = require('./handlers')
   const CheckRoleView = require('../users/route_prerequesites').CheckRoleView(server)
-  const { configRoute} = require("../../helpers/routes")
   return [
     {
       method: 'GET',
