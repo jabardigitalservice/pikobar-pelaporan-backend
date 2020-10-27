@@ -5,15 +5,15 @@ module.exports = (server) => {
   return [
     {
       method: 'GET',
-      path: '/country',
-      config: configRoute("show country lists", "country", CheckRoleView),
-      handler: handlers.listCountry(server)
-    },
-    {
-      method: 'GET',
       path: '/menu',
       config: configRoute("show districs in west java areas", "country", CheckRoleView),
       handler: handlers.listMenu(server)
+    },
+    {
+      method: 'GET',
+      path: '/country',
+      config: configRoute("show country lists", "country", CheckRoleView),
+      handler: handlers.listCountry(server)
     }
   ]
 }
