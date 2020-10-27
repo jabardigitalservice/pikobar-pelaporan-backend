@@ -1,26 +1,19 @@
 module.exports = (server) => {
-  const handlers = require('./handlers')(server)
-
+  const { configRoute } = require("../../helpers/routes")
+  const handlers = require('./handlers')
+  const CheckRoleView = require('../users/route_prerequesites').CheckRoleView(server)
   return [
     {
       method: 'GET',
       path: '/occupations',
-      config: {
-        auth: 'jwt',
-        description: 'show occupations',
-        tags: ['api', 'occupations'],
-      },
-      handler: handlers.ListOccupation
+      config: configRoute("occupation list", "occupations", CheckRoleView),
+      handler: handlers.ListOccupation(server)
     },
     {
       method: 'GET',
       path: '/occupations/{id}',
-      config: {
-        auth: 'jwt',
-        description: 'show detail occupation',
-        tags: ['api', 'occupations'],
-      },
-      handler: handlers.GetOccupationDetail
+      config: configRoute("show detail occupation", "occupations", CheckRoleView),
+      handler: handlers.GetOccupationDetail(server)
     }
   ]
 }
