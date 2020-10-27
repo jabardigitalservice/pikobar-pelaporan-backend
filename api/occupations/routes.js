@@ -6,7 +6,7 @@ module.exports = (server) => {
     {
       method: 'GET',
       path: '/occupations',
-      config: configRoute("show occupation", "occupations", CheckRoleView),
+      config: configRoute("occupation list", "occupations", CheckRoleView),
       handler: handlers.ListOccupation(server)
     },
     {
