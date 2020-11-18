@@ -1,7 +1,4 @@
-module.exports = (server, route, checkRole) => {
-  const roleView = checkRole.viewOnly
-  const roleCud = checkRole.createUpdateDelete
-
+module.exports = (server, route, roleView, roleCud) => {
   return [
     route(
       server, 'POST', '/public-place/{id_case}',

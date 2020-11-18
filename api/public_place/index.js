@@ -3,7 +3,9 @@ const { routeWithPre } = require('../../helpers/routes')
 
 const register = (server, options, next) => {
   const { checkRole } = require('../helpers')
-  server.route(Routes(server, routeWithPre, checkRole(server)))
+  const roleView = checkRole(server).viewOnly
+  const roleCud = checkRole(server).createUpdateDelete
+  server.route(Routes(server, routeWithPre, roleView, roleCud))
   return next()
 }
 
