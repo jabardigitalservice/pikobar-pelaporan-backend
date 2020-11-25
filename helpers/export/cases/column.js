@@ -31,7 +31,7 @@ const sectionInfo = (this_) => {
   let lastDate = this_.last_date_status_patient ? helpers.convertDate(this_.last_date_status_patient) : null
   let patientLocation = helpers.locationPatient(this_.current_location_type, this_.current_location_address)
   return {
-    "Alamat Lengkap (RT/RW)": `${this_.address_street}`,
+    "Alamat Lengkap (RT/RW)": `${helpers.checkExistColumn(this_.address_street)}`,
     "Pekerjaan": this_.occupation,
     "Alamat Kantor": this_.office_address,
     "Kewarganegaraan": this_.nationality,

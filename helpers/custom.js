@@ -164,7 +164,7 @@ const convertPysichal = (param) => {
 }
 
 const checkExistColumn = (param) => {
-  return param ? param : null
+  return param ? param : ""
 }
 
 const rollback = async (schema, insertedIds) => {
