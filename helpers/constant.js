@@ -45,6 +45,10 @@ module.exports = {
     verified_status: 'verified',
     is_west_java: { $ne: false },
   },
+  HISTORY_DEFAULT_SORT: {
+    last_date_status_patient: 'desc',
+    createdAt: 'desc'
+  },
   GENDER: {
     MALE: 'L',
     FEMALE: 'P',
@@ -168,5 +172,9 @@ module.exports = {
     SUSPECT_PROBABLE_ISOLATION: 'Jumlah kasus suspek + kasus probabel',
     CONFIRMED_ISOLATION: 'Jumlah kasus konfirmasi',
     CLOSE_CONTACT_ISOLATION: 'Jumlah kontak erat sedang dipantau'
-  }
+  },
+  TRAVEL_TYPE: {
+    ABROAD: 'Dari Luar Negeri',
+    DOMESTIC: 'Dari Luar Kota',
+  },
 }

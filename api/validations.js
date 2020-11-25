@@ -42,6 +42,12 @@ const BadRequestStatus = {
   }
 }
 
+const SuccessRequest = {
+  status: {
+    200: schemaForStatusCode(400)
+  }
+}
+
 const UnauthorizedStatus = {
   status: {
     401: schemaForStatusCode(401)
@@ -85,5 +91,6 @@ module.exports = {
   ErrorsOnPostOutputValidations,
   ErrorsOnPutOutputValidations,
   ErrorsOnDeleteOutputValidations,
-  HeadersPayLoad
+  HeadersPayLoad,
+  SuccessRequest
 }

@@ -7,13 +7,12 @@ const { patientStatus } = require('../helpers/custom')
 
 const listCaseRelated = async (query, user, callback) => {
   try {
-    const whereRole = { $or: [
-      Check.countByRole(user), {
-        close_contact_parents: { $elemMatch: {
-          author_district_code: user.code_district_city
-        } }
-      },
-    ]}
+    const whereRole = {
+      ...Check.countByRole(user),
+      close_contact_parents: { $elemMatch: {
+        author_district_code: user.code_district_city
+      } }
+    }
     const filter = await Filter.filterCase(user, query)
     const condition = Object.assign(whereRole, filter)
     const staticParam = { ...WHERE_GLOBAL, "close_contact_parents": { $gt: [] } }
@@ -210,4 +209,3 @@ module.exports = [
     method: sync,
   },
 ];
-

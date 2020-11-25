@@ -9,7 +9,7 @@ const Notification = require('../models/Notification')
 const Notif = require('../helpers/notification')
 const { deleteProps, rollback } = require('../helpers/custom')
 const Validate = require('../helpers/cases/revamp/handlerpost')
-const { VERIFIED_STATUS, ROLE } = require('../helpers/constant')
+const { INSPECTION_TYPES, VERIFIED_STATUS, TRAVEL_TYPE, ROLE } = require('../helpers/constant')
 const { getCountBasedOnDistrict } = require('../helpers/cases/global')
 
 // scope helper
@@ -161,27 +161,29 @@ async function exportEpidemiologicalForm (services, thisCase, callback) {
 async function getDetailCaseSummary(id, callback) {
   try {
     const aggQuery = [
-      { $match: { _id: ObjectId(id) } },
-      { $addFields: {
-          relatedCases: {
-            $concatArrays: [ "$close_contact_parents", "$close_contact_childs" ],
-          },
-          pcr: _filteredFields('inspection_support', 'inspection_type', 'pcr'),
-          rapid: _filteredFields('inspection_support', 'inspection_type', 'rapid'),
+      { $match: { _id: ObjectId(id) } }, { $addFields: {
+          relatedCases: { $concatArrays: [ "$close_contact_parents", "$close_contact_childs" ] },
+          pcr: _filteredFields('inspection_support', 'inspection_type', INSPECTION_TYPES.PCR),
+          rapid: _filteredFields('inspection_support', 'inspection_type', INSPECTION_TYPES.RAPID),
+          travelAbroad: _filteredFields('travelling_history', 'travelling_type', TRAVEL_TYPE.ABROAD),
+          travelDomestic: _filteredFields('travelling_history', 'travelling_type', TRAVEL_TYPE.DOMESTIC),
       } },
       { $project: {
           _id: 0,
           pcrTotal: { $size: { "$ifNull": [ "$pcr", [] ] } },
           rapidTotal: { $size: { "$ifNull": [ "$rapid", [] ] } },
           relatedCasesTotal: { $size: { "$ifNull": [ "$relatedCases", [] ] } },
+          travelAbroadTotal: { $size: { "$ifNull": [ "$travelAbroad", [] ] } },
+          travelDomesticTotal: { $size: { "$ifNull": [ "$travelDomestic", [] ] } },
+          visitedLocalAreaTotal: { $size: { "$ifNull": [ "$visited_local_area", [] ] } },
+          visitedPublicPlaceTotal: { $size: { "$ifNull": [ "$visited_public_place", [] ] } },
       } }
     ]
 
     const result = await Case.aggregate(aggQuery)
     callback(null, result.shift())
-  } catch (e) {
-    callback(e, null)
-  }
+
+  } catch (e) { callback(e, null) }
 }
 
 async function createMultiple (services, payload, author, callback) {

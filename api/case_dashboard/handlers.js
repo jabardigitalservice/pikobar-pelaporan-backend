@@ -81,21 +81,18 @@ const lableHeader = (role) => {
 
 const mapingDemographic = (criteria, result, role) => {
   return result.map(({
-      _id,
-      wni,
-      wna,
-      male,
-      female,
-      under_five,
-      six_nine,
-      twenty_twenty_nine,
-      thirty_thirty_nine
+      _id, wni, wna, male, female,
+      under_five, six_nine, twenty_twenty_nine,thirty_thirty_nine,
+      forty_forty_nine, fifty_fifty_nine, sixty_sixty_nine,
+      seventy_seventy_nine, greater_eighty
     }) => (
       {
         [lableHeader(role)]: _id, 'Kriteria': criteria, 'WNI': wni, 'WNA': wna,
         'Laki-Laki': male, 'Perempuan': female,
         '<5TH': under_five, '6-9TH': six_nine,
-        '20-29TH': twenty_twenty_nine, '30-39TH': thirty_thirty_nine,
+        '20-29TH': twenty_twenty_nine, '30-39TH': thirty_thirty_nine, '40-49TH': forty_forty_nine,
+        '50-59TH': fifty_fifty_nine, '60-69TH': sixty_sixty_nine, '70-79TH': seventy_seventy_nine,
+        '>80TH': greater_eighty,
       }
   ))
 }

@@ -146,6 +146,7 @@ CaseSchema.index({ transfer_status: 1 });
 CaseSchema.index({ transfer_to_unit_id: 1 });
 CaseSchema.index({ verified_status: 1 });
 CaseSchema.index({ address_district_code: 1 });
+CaseSchema.index({ last_date_status_patient: 1 });
 CaseSchema.plugin(mongoosePaginate);
 CaseSchema.plugin(aggregatePaginate);
 CaseSchema.plugin(uniqueValidator, { message: 'ID already exists in the database.' });
