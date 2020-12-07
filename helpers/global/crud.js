@@ -15,6 +15,25 @@ const deleteGlobal = async (Schema, column, id) => {
   return await Schema.updateOne(condition, { $pull: pull })
 }
 
+const createGlobal = async (Schema, id_case, set, addToSet) => {
+  return await Schema.updateOne(
+    { "_id": ObjectId(id_case) },
+    { $set: { [set] : true },
+      $addToSet: {
+        ...addToSet
+      }
+    }, { new: true })
+}
+
+const updateGlobal = async (Schema, where, id, set) => {
+  return await Schema.updateOne({
+    [where]: ObjectId(id)
+  },
+  { "$set": {
+    ...set
+  }}, { new : true })
+}
+
 module.exports = {
-  findGlobal, deleteGlobal
+  findGlobal, deleteGlobal, createGlobal, updateGlobal
 }

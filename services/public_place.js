@@ -1,22 +1,22 @@
 const PublicPlace = require('../models/Case')
 const ObjectId = require('mongodb').ObjectID
-const { findGlobal, deleteGlobal } = require('../helpers/global/crud')
+const {
+  findGlobal, deleteGlobal,
+  createGlobal, updateGlobal
+} = require('../helpers/global/crud')
 
 const createPublicPlace = async (payload, id_case, callback) => {
   try {
-    const inserted = await PublicPlace.updateOne(
-      { "_id": ObjectId(id_case) },
-      { $set: { 'has_visited_public_place': true },
-        $addToSet: {
-          "visited_public_place": {
-            "public_place_category": payload.public_place_category,
-            "public_place_name": payload.public_place_name,
-            "public_place_address": payload.public_place_address,
-            "public_place_date_visited": payload.public_place_date_visited,
-            "public_place_duration_visited": payload.public_place_duration_visited
-          }
-        }
-      }, { new: true })
+    const payloads = {
+      "visited_public_place": {
+        "public_place_category": payload.public_place_category,
+        "public_place_name": payload.public_place_name,
+        "public_place_address": payload.public_place_address,
+        "public_place_date_visited": payload.public_place_date_visited,
+        "public_place_duration_visited": payload.public_place_duration_visited
+      }
+    }
+    const inserted = await createGlobal(PublicPlace, id_case, 'has_visited_public_place', payloads)
     callback(null, inserted)
   } catch (error) {
     callback(error, null)
@@ -36,16 +36,14 @@ const listPublicPlace = async (id_case, callback) => {
 
 const updatePublicPlace = async (id_public_place, payload, callback) => {
   try {
-    const updated = await PublicPlace.updateOne({
-      "visited_public_place._id": ObjectId(id_public_place)
-    },
-    { "$set": {
+    const payloads = {
       "visited_public_place.$.public_place_category": payload.public_place_category,
       "visited_public_place.$.public_place_name": payload.public_place_name,
       "visited_public_place.$.public_place_address": payload.public_place_address,
       "visited_public_place.$.public_place_date_visited": payload.public_place_date_visited,
       "visited_public_place.$.public_place_duration_visited": payload.public_place_duration_visited
-    }}, { new : true })
+    }
+    const updated = await updateGlobal(PublicPlace, 'visited_public_place._id', id_public_place, payloads)
     callback(null, updated)
   } catch (error) {
     callback(error, null)
