@@ -6,6 +6,7 @@ const {
 
 const createTravel = async (payload, id_case, callback) => {
   try {
+    const column = 'travelling_history_before_sick_14_days'
     const payloads = {
       'travelling_history': {
         "travelling_type": payload.travelling_type,
@@ -15,7 +16,6 @@ const createTravel = async (payload, id_case, callback) => {
         "travelling_arrive": payload.travelling_arrive
       }
     }
-    const column = 'travelling_history_before_sick_14_days'
     const inserted = await createGlobal(Travel, id_case, column, payloads)
     callback(null, inserted)
   } catch (error) {
