@@ -1,5 +1,4 @@
 const PublicPlace = require('../models/Case')
-const ObjectId = require('mongodb').ObjectID
 const {
   findGlobal, deleteGlobal,
   createGlobal, updateGlobal

@@ -1,21 +1,22 @@
 const Travel = require('../models/Case')
 const ObjectId = require('mongodb').ObjectID
+const {
+  createGlobal, updateGlobal
+} = require('../helpers/global/crud')
 
 const createTravel = async (payload, id_case, callback) => {
   try {
-    const inserted = await Travel.updateOne(
-      { "_id": ObjectId(id_case) },
-      { $set: { 'travelling_history_before_sick_14_days': true },
-        $addToSet: {
-          'travelling_history': {
-            "travelling_type": payload.travelling_type,
-            "travelling_visited": payload.travelling_visited,
-            "travelling_city": payload.travelling_city,
-            "travelling_date": payload.travelling_date,
-            "travelling_arrive": payload.travelling_arrive
-          }
-        }
-      }, { new: true })
+    const payloads = {
+      'travelling_history': {
+        "travelling_type": payload.travelling_type,
+        "travelling_visited": payload.travelling_visited,
+        "travelling_city": payload.travelling_city,
+        "travelling_date": payload.travelling_date,
+        "travelling_arrive": payload.travelling_arrive
+      }
+    }
+    const column = 'travelling_history_before_sick_14_days'
+    const inserted = await createGlobal(Travel, id_case, column, payloads)
     callback(null, inserted)
   } catch (error) {
     callback(error, null)
@@ -35,17 +36,15 @@ const listTravel = async (id_case, callback) => {
 
 const updateTravel = async (id_history_travel, payload, callback) => {
   try {
-    const updated = await Travel.updateOne(
-      {
-        "travelling_history._id": ObjectId(id_history_travel)
-      },
-      { "$set": {
-        "travelling_history.$.travelling_type": payload.travelling_type,
-        "travelling_history.$.travelling_visited": payload.travelling_visited,
-        "travelling_history.$.travelling_city": payload.travelling_city,
-        "travelling_history.$.travelling_date": payload.travelling_date,
-        "travelling_history.$.travelling_arrive": payload.travelling_arrive
-      }}, { new : true })
+    const payloads = {
+      "travelling_history.$.travelling_type": payload.travelling_type,
+      "travelling_history.$.travelling_visited": payload.travelling_visited,
+      "travelling_history.$.travelling_city": payload.travelling_city,
+      "travelling_history.$.travelling_date": payload.travelling_date,
+      "travelling_history.$.travelling_arrive": payload.travelling_arrive
+    }
+    const _id = 'travelling_history._id'
+    const updated = await updateGlobal(Travel, _id, id_history_travel, payloads)
     callback(null, updated)
   } catch (error) {
     callback(error, null)
