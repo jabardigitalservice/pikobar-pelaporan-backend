@@ -35,7 +35,7 @@
     "boom": "^7.3.0",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
-    "fast-csv": "^4.3.1",
+    "fast-csv": "^4.3.6",
     "firebase-admin": "^8.12.1",
     "glob": "^7.1.6",
     "glue": "^4.1.0",
