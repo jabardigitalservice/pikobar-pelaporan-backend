@@ -33,16 +33,13 @@ const getDistrictCity = async (request, callback) => {
 }
 
 const getSubDistrict = async (city_code, request, callback) => {
-  var params = new Object();
-  params.kemendagri_kabupaten_kode = city_code;
+  const params = filterParam(request)
 
-  if (request.kecamatan_kode) {
-    params.kemendagri_kecamatan_kode = request.kecamatan_kode
-  }
+  params.kemendagri_kabupaten_kode = city_code
 
   try {
     const resSub = await SubDistrict.find(params).sort({ kemendagri_kecamatan_nama: 'asc' })
-    callback(null, resSub.map(resSub => resSub.toJSONFor()))
+    callback(null, resSub.map(r => r.toJSONFor()))
   } catch (error) {
     callback(error, null)
   }
@@ -59,12 +56,9 @@ const getSubDistrictDetail = async (kecamatan_kode, callback) => {
 }
 
 const getVillage = async (kecamatan_code, request, callback) => {
-  let params = new Object()
-  params.kemendagri_kecamatan_kode = kecamatan_code
+  const params = filterParam(request)
 
-  if (request.desa_kode) {
-    params.kemendagri_desa_kode = request.desa_kode
-  }
+  params.kemendagri_kecamatan_kode = kecamatan_code
 
   try {
     const res = await Village.find(params).sort({ kemendagri_desa_nama: 'asc' })
@@ -76,7 +70,9 @@ const getVillage = async (kecamatan_code, request, callback) => {
 
 const getVillageDetail = async (desa_kode, callback) => {
   try {
-    const res = await Village.find({ kemendagri_desa_kode: desa_kode }).sort({ kemendagri_desa_nama: 'asc' })
+    const where = { kemendagri_desa_kode: desa_kode }
+    const sort = { kemendagri_desa_nama: 'asc' }
+    const res = await Village.find(where).sort(sort)
     callback(null, res.map(res => res.toJSONFor()))
   } catch (error) {
     callback(error, null)
@@ -128,6 +124,20 @@ const province = async(query, callback) =>{
   } catch (error) {
     callback(error, null)
   }
+}
+
+const filterParam = (request) => {
+  const params = {}
+
+  if (request.kecamatan_kode) {
+    params.kemendagri_kecamatan_kode = request.kecamatan_kode
+  }
+
+  if (request.desa_kode) {
+    params.kemendagri_desa_kode = request.desa_kode
+  }
+
+  return params
 }
 
 module.exports = [
