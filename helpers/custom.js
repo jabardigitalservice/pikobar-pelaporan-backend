@@ -126,6 +126,9 @@ const convertYesOrNO = (param) => {
     case 3:
       result = ANSWER.TIDAK_TAHU
       break
+    case 4:
+      result = `${ANSWER.YA} ${ANSWER.TIDAK}`
+      break
     default:
       result = ''
   }
