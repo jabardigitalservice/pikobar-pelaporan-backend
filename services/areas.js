@@ -57,11 +57,10 @@ const getSubDistrictDetail = async (kecamatan_kode, callback) => {
 
 const getVillage = async (kecamatan_code, request, callback) => {
   const params = filterParam(request)
-
-  params.kemendagri_kecamatan_kode = kecamatan_code
+  const search = { ...params, ...{ kemendagri_kecamatan_kode : kecamatan_code }}
 
   try {
-    const res = await Village.find(params).sort({ kemendagri_desa_nama: 'asc' })
+    const res = await Village.find(search).sort({ kemendagri_desa_nama: 'asc' })
     callback(null, res.map(res => res.toJSONFor()))
   } catch (error) {
     callback(error, null)
@@ -127,7 +126,7 @@ const province = async(query, callback) =>{
 }
 
 const filterParam = (request) => {
-  const params = {}
+  const params = new Object()
 
   if (request.kecamatan_kode) {
     params.kemendagri_kecamatan_kode = request.kecamatan_kode
