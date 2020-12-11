@@ -25,7 +25,9 @@ const getDistrictCity = async (request, callback) => {
   }
 
   try {
-    const res = await Districtcity.find(params).sort({ kemendagri_kabupaten_nama: 'asc' })
+    const res = await Districtcity
+        .find(params)
+        .sort({ kemendagri_kabupaten_nama: 'asc' })
     callback(null, res.map(res => res.toJSONFor()))
   } catch (error) {
     callback(error, null)
