@@ -24,12 +24,8 @@ const getDistrictCity = async (request, callback) => {
     params.kemendagri_provinsi_nama = request.kemendagri_provinsi_nama.toUpperCase()
   }
 
-  const sort = { kemendagri_kabupaten_nama: 'asc' }
-
   try {
-    const res = await Districtcity
-        .find(params)
-        .sort(sort)
+    const res = await Districtcity.find(params).sort({ kemendagri_kabupaten_nama: 'asc' })
     callback(null, res.map(res => res.toJSONFor()))
   } catch (error) {
     callback(error, null)
@@ -37,13 +33,16 @@ const getDistrictCity = async (request, callback) => {
 }
 
 const getSubDistrict = async (city_code, request, callback) => {
-  const params = filterParam(request)
+  var params = new Object();
+  params.kemendagri_kabupaten_kode = city_code;
 
-  params.kemendagri_kabupaten_kode = city_code
+  if (request.kecamatan_kode) {
+    params.kemendagri_kecamatan_kode = request.kecamatan_kode
+  }
 
   try {
     const resSub = await SubDistrict.find(params).sort({ kemendagri_kecamatan_nama: 'asc' })
-    callback(null, resSub.map(r => r.toJSONFor()))
+    callback(null, resSub.map(resSub => resSub.toJSONFor()))
   } catch (error) {
     callback(error, null)
   }
@@ -60,12 +59,15 @@ const getSubDistrictDetail = async (kecamatan_kode, callback) => {
 }
 
 const getVillage = async (kecamatan_code, request, callback) => {
-  const params = filterParam(request)
-  const search = { ...params, ...{ kemendagri_kecamatan_kode : kecamatan_code }}
-  const sort = { kemendagri_desa_nama: 'asc' }
+  let params = new Object()
+  params.kemendagri_kecamatan_kode = kecamatan_code
+
+  if (request.desa_kode) {
+    params.kemendagri_desa_kode = request.desa_kode
+  }
 
   try {
-    const res = await Village.find(search).sort(sort)
+    const res = await Village.find(params).sort({ kemendagri_desa_nama: 'asc' })
     callback(null, res.map(res => res.toJSONFor()))
   } catch (error) {
     callback(error, null)
@@ -74,9 +76,7 @@ const getVillage = async (kecamatan_code, request, callback) => {
 
 const getVillageDetail = async (desa_kode, callback) => {
   try {
-    const where = { kemendagri_desa_kode: desa_kode }
-    const sort = { kemendagri_desa_nama: 'asc' }
-    const res = await Village.find(where).sort(sort)
+    const res = await Village.find({ kemendagri_desa_kode: desa_kode }).sort({ kemendagri_desa_nama: 'asc' })
     callback(null, res.map(res => res.toJSONFor()))
   } catch (error) {
     callback(error, null)
@@ -128,20 +128,6 @@ const province = async(query, callback) =>{
   } catch (error) {
     callback(error, null)
   }
-}
-
-const filterParam = (request) => {
-  const params = new Object()
-
-  if (request.kecamatan_kode) {
-    params.kemendagri_kecamatan_kode = request.kecamatan_kode
-  }
-
-  if (request.desa_kode) {
-    params.kemendagri_desa_kode = request.desa_kode
-  }
-
-  return params
 }
 
 module.exports = [
