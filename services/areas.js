@@ -58,9 +58,10 @@ const getSubDistrictDetail = async (kecamatan_kode, callback) => {
 const getVillage = async (kecamatan_code, request, callback) => {
   const params = filterParam(request)
   const search = { ...params, ...{ kemendagri_kecamatan_kode : kecamatan_code }}
+  const sort = { kemendagri_desa_nama: 'asc' }
 
   try {
-    const res = await Village.find(search).sort({ kemendagri_desa_nama: 'asc' })
+    const res = await Village.find(search).sort(sort)
     callback(null, res.map(res => res.toJSONFor()))
   } catch (error) {
     callback(error, null)
