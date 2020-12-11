@@ -24,10 +24,12 @@ const getDistrictCity = async (request, callback) => {
     params.kemendagri_provinsi_nama = request.kemendagri_provinsi_nama.toUpperCase()
   }
 
+  const sort = { kemendagri_kabupaten_nama: 'asc' }
+
   try {
     const res = await Districtcity
         .find(params)
-        .sort({ kemendagri_kabupaten_nama: 'asc' })
+        .sort(sort)
     callback(null, res.map(res => res.toJSONFor()))
   } catch (error) {
     callback(error, null)
