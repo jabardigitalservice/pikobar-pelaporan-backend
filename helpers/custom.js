@@ -41,17 +41,17 @@ const convertDate = (dates) => {
   return moment(dates).format('YYYY/MM/DD')
 }
 
+function isEqual(a, b) {
+  if (Array.isArray(a))
+    return JSON.stringify(a) === JSON.stringify(b)
+  else if (typeof (a) === 'object')
+    return String(a) === String(b)
+  return a === b
+}
+
 const isDirty = (oldData, newData) => {
   if (!oldData) {
     return true
-  }
-
-  function isEqual(a, b) {
-    if (Array.isArray(a))
-      return JSON.stringify(a) === JSON.stringify(b)
-    else if (typeof (a) === 'object')
-      return String(a) === String(b)
-    return a === b
   }
 
   let result = false
@@ -69,18 +69,24 @@ const isDirty = (oldData, newData) => {
 
 const patientStatus = (params) => {
   let finalResult
-  if (params === "1") {
-    finalResult = PATIENT_STATUS.DONE
-  } else if (params === "2") {
-    finalResult = PATIENT_STATUS.DEAD
-  } else if (params === "3") {
-    finalResult = PATIENT_STATUS.DISCARDED
-  } else if (params === "4") {
-    finalResult = PATIENT_STATUS.SICK
-  } else if (params === "5") {
-    finalResult = PATIENT_STATUS.QUARANTINED
-  } else {
-    finalResult = PATIENT_STATUS.NEGATIVE
+  switch (params) {
+    case '1':
+      finalResult = PATIENT_STATUS.DONE
+      break
+    case '2':
+      finalResult = PATIENT_STATUS.DEAD
+      break
+    case '3':
+      finalResult = PATIENT_STATUS.DISCARDED
+      break
+    case '4':
+      finalResult = PATIENT_STATUS.SICK
+      break
+    case '5':
+      finalResult = PATIENT_STATUS.QUARANTINED
+      break
+    default:
+      finalResult = PATIENT_STATUS.NEGATIVE
   }
 
   return finalResult
@@ -88,16 +94,21 @@ const patientStatus = (params) => {
 
 const criteriaConvert = (status) => {
   let criteria
-  if (status === CRITERIA.CONF) {
-    criteria = CRITERIA.CONF_ID
-  } else if (status === CRITERIA.PROB) {
-    criteria = CRITERIA.PROB_ID
-  } else if (status === CRITERIA.SUS) {
-    criteria = CRITERIA.SUS_ID
-  } else if (status === CRITERIA.CLOSE) {
-    criteria = CRITERIA.CLOSE_ID
-  } else {
-    criteria = ''
+  switch (status) {
+    case CRITERIA.CONF:
+      criteria =CRITERIA.CONF_ID
+      break
+    case CRITERIA.PROB:
+      criteria = CRITERIA.PROB_ID
+      break
+    case CRITERIA.SUS:
+      criteria = CRITERIA.SUS_ID
+      break
+    case CRITERIA.CLOSE:
+      criteria = CRITERIA.CLOSE_ID
+      break
+    default:
+      criteria = ''
   }
 
   return criteria
@@ -105,14 +116,18 @@ const criteriaConvert = (status) => {
 
 const convertYesOrNO = (param) => {
   let result
-  if (param === 1) {
-    result = ANSWER.YA
-  } else if (param === 2) {
-    result = ANSWER.TIDAK
-  } else if (param === 3) {
-    result = ANSWER.TIDAK_TAHU
-  } else {
-    result = ''
+  switch (param) {
+    case 1:
+      result = ANSWER.YA
+      break
+    case 2:
+      result = ANSWER.TIDAK
+      break
+    case 3:
+      result = ANSWER.TIDAK_TAHU
+      break
+    default:
+      result = ''
   }
 
   return result
@@ -131,18 +146,24 @@ const yesOrNoBool = (param) => {
 
 const convertIncome = (param) => {
   let result
-  if (param === 0) {
-    result = INCOME.NO_INCONME
-  } else if (param === 1) {
-    result = INCOME.SMALLER
-  } else if (param === 2) {
-    result = INCOME.ONE_TO3
-  } else if (param === 3) {
-    result =INCOME.THREET_O5
-  } else if (param === 4) {
-    result = INCOME.GREATHER_5
-  } else {
-    result = ''
+  switch (param) {
+    case 0:
+      result = INCOME.NO_INCONME
+      break
+    case 1:
+      result = INCOME.SMALLER
+      break
+    case 2:
+      result = INCOME.ONE_TO3
+      break
+    case 3:
+      result = INCOME.THREET_O5
+      break
+    case 4:
+      result = INCOME.GREATHER_5
+      break
+    default:
+      result = ''
   }
 
   return result
@@ -150,14 +171,11 @@ const convertIncome = (param) => {
 
 const convertPysichal = (param) => {
   let result
-  if (param === 0) {
-    result = PYSICHAL.SEDENTER
-  } else if (param === 1) {
-    result = PYSICHAL.SMALLER_150MINUTE
-  } else if (param === 2) {
-    result = PYSICHAL.GREATHER_150MINUTE
-  } else {
-    result = ''
+  switch (param) {
+    case 0: result = PYSICHAL.SEDENTER; break
+    case 1: result = PYSICHAL.SMALLER_150MINUTE; break
+    case 2: result = PYSICHAL.GREATHER_150MINUTE; break
+    default: result = ''
   }
 
   return result
