@@ -12,6 +12,14 @@ const filterNotification = (query, userId) => {
   if (query.eventType) {
     params.eventType = query.eventType
   }
+
+  if(query.start_date){
+    params.createdAt = {
+      "$gte": new Date(new Date(query.start_date)).setHours(00, 00, 00),
+      "$lt": new Date(new Date(query.start_date)).setHours(23, 59, 59)
+    }
+  }
+
   return params
 }
 

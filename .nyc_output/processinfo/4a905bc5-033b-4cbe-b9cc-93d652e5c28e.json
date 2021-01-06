@@ -1,0 +1,1 @@
+{"parent":"fdab6028-7583-4993-b6f4-61c964a785e3","pid":1451,"argv":["/usr/local/bin/node","/app/node_modules/.bin/mocha","--timeout","30000","--exit"],"execArgv":[],"cwd":"/app","time":1609909060220,"ppid":1450,"coverageFilename":"/app/.nyc_output/4a905bc5-033b-4cbe-b9cc-93d652e5c28e.json","externalId":"","uuid":"4a905bc5-033b-4cbe-b9cc-93d652e5c28e","files":[]}
