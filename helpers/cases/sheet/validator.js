@@ -137,6 +137,17 @@ const validateDistrictCode = async (recordError, code) => {
   return recordError
 }
 
+const validateFinalResult = (recordError, final_result) => {
+  const errField = lang['final_result']
+  const message = `Kriteria dengan nama ${final_result} tidak sesuai dengan ketentuan, harap diperbaiki terlebih dahulu sesuai ketentuan`
+  if (!Array.isArray(recordError[errField])) {
+    recordError[errField] = []
+  }
+  recordError[errField].push(`\"${errField}"\ '${final_result}' ${message}`)
+
+  return recordError
+}
+
 const validate = async (payload) => {
   const errors = {}
   const reqDuplicateNik = []
@@ -145,7 +156,7 @@ const validate = async (payload) => {
     const joiResult = Joi.validate(payload[i], rules.CaseSheetRequest)
 
     const recordErrors = []
-    const { nik, address_district_code } = payload[i]
+    const { nik, address_district_code, final_result } = payload[i]
     let recordError = transformedJoiErrors(joiResult)
 
     // is address_district_code exist?
@@ -156,6 +167,9 @@ const validate = async (payload) => {
 
     // validate duplication NIK on request payload
     recordError = validateDuplicateNikReqPayload(recordError, reqDuplicateNik, payload, nik)
+
+    // validate final result request payload
+    recordError = validateFinalResult(recordError, final_result)
 
     if (Object.keys(recordError).length) {
       recordErrors.push(recordError)
