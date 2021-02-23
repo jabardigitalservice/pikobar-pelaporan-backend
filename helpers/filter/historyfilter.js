@@ -45,6 +45,28 @@ const condition = (params, search, query) => {
   ]
 }
 
+const sqlHistoriesExport = (params, search, query) => {
+  const searching = Object.keys(search).length == 0 ? [search] : search
+  const andParam = { ...params }
+  return [
+    { $match: { $and: [andParam], $or: searching } },
+    { ...casesHistory }, { ...author },
+    {
+      $project: {
+        histories: {
+          ...columnInfo,
+        ...columnIdentityClinic,
+        ...columnAuthor
+        }
+      }
+    },
+    {
+      $unwind: "$histories"
+    },
+    { $replaceRoot: { newRoot: "$histories" } }
+  ]
+}
+
 module.exports = {
-  excellHistories, condition
+  excellHistories, condition, sqlHistoriesExport
 }
