@@ -50,7 +50,7 @@ const sqlHistoriesExport = (params, search, query) => {
   const andParam = { ...params }
   return [
     { $match: { $and: [andParam], $or: searching } },
-    { ...casesHistory }, { ...author },
+    { ...casesHistory }, { ...author }, { $sort: { "id": 1} },
     {
       $project: {
         histories: {

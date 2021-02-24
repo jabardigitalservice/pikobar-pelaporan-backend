@@ -27,13 +27,18 @@ const caseExport = async (query, user, callback) => {
 }
 
 const historyExport = async (query, user, callback) => {
-  const filter = filterCase(user, query)
+  const filter = await filterCase(user, query)
   const filterRole = exportByRole({}, user, query)
   const params = { ...filter, ...filterRole, ...WHERE_GLOBAL }
   const search = searchExport(query)
   params.last_history = { $exists: true, $ne: null }
   const where = sqlHistoriesExport(params, search, query)
-  await sameCondition(where, excellHistories, callback)
+  try {
+    const result = await Case.aggregate(where).allowDiskUse(true)
+    callback (null, result.map(cases => excellHistories(cases)))
+  } catch (error) {
+    callback(error, null)
+  }
 }
 
 module.exports = [
