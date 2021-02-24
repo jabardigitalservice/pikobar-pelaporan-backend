@@ -14,6 +14,7 @@ const { CRITERIA, WHERE_GLOBAL } = require('../helpers/constant')
 const { summaryCondition } = require('../helpers/cases/global')
 const moment = require('moment')
 const { searchExport } = require('../helpers/filter/search')
+const { sameCondition } = require('../utils')
 
 async function ListCase (query, user, callback) {
 
@@ -138,12 +139,7 @@ const listCaseExport = async (query, user, callback) => {
   const search = searchExport(query)
   params.last_history = { $exists: true, $ne: null }
   const condition = sqlCondition(params, search, query)
-  try {
-    const resultExport = await Case.aggregate(condition).allowDiskUse(true)
-    callback (null, resultExport.map(cases => excellOutput(cases)))
-  } catch (error) {
-    callback(error, null)
-  }
+  await sameCondition(Case, condition, excellOutput, callback)
 }
 
 function getCaseById (id, callback) {

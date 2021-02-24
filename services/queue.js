@@ -7,7 +7,7 @@ const { sqlCaseExport, excellOutput } = require('../helpers/filter/exportfilter'
 const { searchExport } = require('../helpers/filter/search')
 const { sqlHistoriesExport, excellHistories } = require('../helpers/filter/historyfilter')
 
-const sameCondition = async (condition, method, callback) => {
+const sameConditions = async (condition, method, callback) => {
   try {
     const result = await Case.aggregate(condition)
     callback (null, result.map(cases => method(cases)))
@@ -23,7 +23,7 @@ const caseExport = async (query, user, callback) => {
   const search = searchExport(query)
   params.last_history = { $exists: true, $ne: null }
   const condition = sqlCaseExport(params, search, query)
-  await sameCondition(condition, excellOutput, callback)
+  await sameConditions(condition, excellOutput, callback)
 }
 
 const historyExport = async (query, user, callback) => {
@@ -33,12 +33,7 @@ const historyExport = async (query, user, callback) => {
   const search = searchExport(query)
   params.last_history = { $exists: true, $ne: null }
   const where = sqlHistoriesExport(params, search, query)
-  try {
-    const result = await Case.aggregate(where).allowDiskUse(true)
-    callback (null, result.map(cases => excellHistories(cases)))
-  } catch (error) {
-    callback(error, null)
-  }
+  await sameCondition(Case, where, excellHistories, callback)
 }
 
 module.exports = [

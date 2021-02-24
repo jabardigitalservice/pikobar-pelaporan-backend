@@ -11,4 +11,13 @@ const conditionPreReq = (result, name, reply, message) => {
   }
 }
 
-module.exports = { conditionPreReq }
+const sameCondition = async (models, condition, method, callback) => {
+  try {
+    const result = await models.aggregate(condition).allowDiskUse(true)
+    callback (null, result.map(cases => method(cases)))
+  } catch (error) {
+    callback(error, null)
+  }
+}
+
+module.exports = { conditionPreReq, sameCondition }
