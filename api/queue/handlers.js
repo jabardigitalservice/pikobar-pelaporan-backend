@@ -35,7 +35,7 @@ const caseExport = (server) => {
 */
 const historyExport = (server) => {
   return async(request, reply) => await sameExportCondition(
-    server, request, reply, 'queuHistory', `Data-Kasus-`
+    server, request, reply, 'queuHistory', `Data-Riwayat-Info-Klinis-`
   )
 }
 
