@@ -1,39 +1,35 @@
 const service = 'services.queue'
-const Case = require('../models/Case')
-const { exportByRole } = require('../helpers/rolecheck')
-const { filterCase } = require('../helpers/filter/casefilter')
-const {  WHERE_GLOBAL } = require('../helpers/constant')
-const { sqlCaseExport, excellOutput } = require('../helpers/filter/exportfilter')
-const { searchExport } = require('../helpers/filter/search')
-const { sqlHistoriesExport, excellHistories } = require('../helpers/filter/historyfilter')
+const { createQueueCases, createQueueHistories } = require('../helpers/queue')
 
-const sameConditions = async (condition, method, callback) => {
+const mapingResult = (result) => {
+  const data = {}
+  data.jobId = result.id
+  data.progress = result.progress
+  data.title = result.data
+  data.timestamp = result.options.timestamp
+  data.status = result.status
+
+  return data
+}
+
+const caseExport = async (query, user, callback) => {
   try {
-    const result = await Case.aggregate(condition)
-    callback (null, result.map(cases => method(cases)))
+    const result = await createQueueCases()
+    const data = mapingResult(result)
+    callback (null, data)
   } catch (error) {
     callback(error, null)
   }
 }
 
-const caseExport = async (query, user, callback) => {
-  const filter = await filterCase(user, query)
-  const filterRole = exportByRole({}, user, query)
-  const params = { ...filter, ...filterRole, ...WHERE_GLOBAL }
-  const search = searchExport(query)
-  params.last_history = { $exists: true, $ne: null }
-  const condition = sqlCaseExport(params, search, query)
-  await sameConditions(condition, excellOutput, callback)
-}
-
 const historyExport = async (query, user, callback) => {
-  const filter = await filterCase(user, query)
-  const filterRole = exportByRole({}, user, query)
-  const params = { ...filter, ...filterRole, ...WHERE_GLOBAL }
-  const search = searchExport(query)
-  params.last_history = { $exists: true, $ne: null }
-  const where = sqlHistoriesExport(params, search, query)
-  await sameCondition(Case, where, excellHistories, callback)
+  try {
+    const result = await createQueueHistories()
+    const data = mapingResult(result)
+    callback (null, data)
+  } catch (error) {
+    callback(error, null)
+  }
 }
 
 module.exports = [

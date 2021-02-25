@@ -1,17 +1,12 @@
-const { constructErrorResponse } = require('../helpers')
-const { generateExcell } = require('../../helpers/export')
+const { replyJson } = require('../helpers')
 
-const sameExportCondition = async (server, request, reply, method, titles) => {
+const sameExportCondition = async (server, request, reply, method) => {
   const query = request.query
   const { user } = request.auth.credentials
-  const fullName = request.auth.credentials.user.fullname.replace(/\s/g, '-')
   return await server.methods.services.queue[method](
     query, user,
-    (err, result) => {
-      if (err) return reply(constructErrorResponse(err)).code(422)
-      const title = titles
-      return generateExcell(result, title, fullName, reply)
-  })
+    (err, result) => replyJson(err, result, reply)
+  )
 }
 /**
   *
@@ -22,7 +17,7 @@ const sameExportCondition = async (server, request, reply, method, titles) => {
 */
 const caseExport = (server) => {
   return async(request, reply) => await sameExportCondition(
-    server, request, reply, 'queuCase', `Data-Kasus-`
+    server, request, reply, 'queuCase',
   )
 }
 
@@ -35,7 +30,7 @@ const caseExport = (server) => {
 */
 const historyExport = (server) => {
   return async(request, reply) => await sameExportCondition(
-    server, request, reply, 'queuHistory', `Data-Riwayat-Info-Klinis-`
+    server, request, reply, 'queuHistory',
   )
 }
 
