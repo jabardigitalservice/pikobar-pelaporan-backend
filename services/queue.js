@@ -12,9 +12,9 @@ const mapingResult = (result) => {
   return data
 }
 
-const caseExport = async (query, user, callback) => {
+const sameCondition = async (queue, callback) => {
   try {
-    const result = await createQueueCases()
+    const result = await queue
     const data = mapingResult(result)
     callback (null, data)
   } catch (error) {
@@ -22,14 +22,12 @@ const caseExport = async (query, user, callback) => {
   }
 }
 
+const caseExport = async (query, user, callback) => {
+  await sameCondition(createQueueCases(), callback)
+}
+
 const historyExport = async (query, user, callback) => {
-  try {
-    const result = await createQueueHistories()
-    const data = mapingResult(result)
-    callback (null, data)
-  } catch (error) {
-    callback(error, null)
-  }
+  await sameCondition(createQueueHistories(), callback)
 }
 
 module.exports = [
