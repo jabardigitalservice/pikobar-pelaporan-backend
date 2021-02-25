@@ -1,5 +1,5 @@
 const service = 'services.queue'
-const { createQueueCases, createQueueHistories } = require('../helpers/queue')
+const { createQueue } = require('../helpers/queue')
 
 const mapingResult = (result) => {
   const data = {}
@@ -12,9 +12,8 @@ const mapingResult = (result) => {
   return data
 }
 
-const sameCondition = async (queue, callback) => {
+const sameCondition = (result, callback) => {
   try {
-    const result = await queue
     const data = mapingResult(result)
     callback (null, data)
   } catch (error) {
@@ -23,11 +22,17 @@ const sameCondition = async (queue, callback) => {
 }
 
 const caseExport = async (query, user, callback) => {
-  await sameCondition(createQueueCases(), callback)
+  const nameQueue = 'export-queue-cases'
+  const nameJob = 'queue-export-cases'
+  const result = await createQueue(nameQueue, nameJob)
+  sameCondition(result, callback)
 }
 
 const historyExport = async (query, user, callback) => {
-  await sameCondition(createQueueHistories(), callback)
+  const nameQueue = 'export-queue-histories'
+  const nameJob = 'queue-export-histories'
+  const result = await createQueue(nameQueue, nameJob)
+  sameCondition(result, callback)
 }
 
 module.exports = [
