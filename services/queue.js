@@ -1,5 +1,6 @@
 const service = 'services.queue'
 const { createQueue } = require('../helpers/queue')
+const { createJobQueue } = require('../helpers/job')
 
 const mapingResult = (result) => {
   const data = {}
@@ -23,15 +24,16 @@ const sameCondition = async (queue, job, callback) => {
 }
 
 const caseExport = async (query, user, callback) => {
-  const nameQueue = 'export-queue-cases'
-  const nameJob = 'queue-export-cases'
+  const nameQueue = 'queue-export-cases'
+  const nameJob = 'job-export-cases'
 
   await sameCondition(nameQueue, nameJob, callback)
+  createJobQueue(nameQueue, query, user, 1)
 }
 
 const historyExport = async (query, user, callback) => {
-  const nameQueue = 'export-queue-histories'
-  const nameJob = 'queue-export-histories'
+  const nameQueue = 'queue-export-histories'
+  const nameJob = 'job-export-histories'
 
   await sameCondition(nameQueue, nameJob, callback)
 }

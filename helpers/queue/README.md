@@ -29,7 +29,7 @@ example in your service
 ```javascript
 const { createQueue } = require('helpers/queue')
 const queuSomething = async () => {
-  await createQueue('name-queue', 'name-job)
+  await createQueue('name-queue', 'name-job')
 }
 ```
 
