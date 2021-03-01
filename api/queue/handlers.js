@@ -4,7 +4,7 @@ const sameExportCondition = async (server, request, reply, method) => {
   const query = request.query
   const { user } = request.auth.credentials
   return await server.methods.services.queue[method](
-    query, user,
+    query, user, reply,
     (err, result) => replyJson(err, result, reply)
   )
 }

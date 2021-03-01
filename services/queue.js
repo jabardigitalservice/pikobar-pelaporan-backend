@@ -1,6 +1,7 @@
 const service = 'services.queue'
 const { createQueue } = require('../helpers/queue')
 const { createJobQueue } = require('../helpers/job')
+const { jobCaseExport } = require('../helpers/job/export_xlsx')
 
 const mapingResult = (result) => {
   const data = {}
@@ -23,12 +24,13 @@ const sameCondition = async (queue, job, callback) => {
   }
 }
 
-const caseExport = async (query, user, callback) => {
+const caseExport = async (query, user, reply, callback) => {
   const nameQueue = 'queue-export-cases'
   const nameJob = 'job-export-cases'
+  const message = `Data Kasus Pikobar Pelaporan : ${user.fullname}`
 
   await sameCondition(nameQueue, nameJob, callback)
-  createJobQueue(nameQueue, query, user, 1)
+  createJobQueue(nameQueue, query, user, reply, jobCaseExport, message, 1)
 }
 
 const historyExport = async (query, user, callback) => {

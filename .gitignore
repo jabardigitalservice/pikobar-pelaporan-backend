@@ -13,5 +13,6 @@ typings
 .idea
 npm-debug.log
 /.nyc_output
+/tmp/cases/*
 
 Dockerfile

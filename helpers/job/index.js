@@ -1,5 +1,6 @@
-const Queue = require('bee-queue');
-
+const Queue = require('bee-queue')
+const fs = require('fs')
+const { sendEmailWithAttachment } = require('../email')
 const options = {
   redis: {
     host: process.env.REDIS_HOST,
@@ -7,33 +8,32 @@ const options = {
   },
 }
 
-const createJobQueue = (nameQueue, query, user, time) => {
-  const jobQueue = new Queue(nameQueue, options);
-
-  jobQueue.process((job, done) => {
-    let cooked = 0;
-
-    setTimeout(() => console.log(`⏱️  Prepare data queue`), 1000);
+const createJobQueue = (nameQueue, query, user, reply, method, message, time) => {
+  const jobQueue = new Queue(nameQueue, options)
+  jobQueue.process(async (job, done) => {
     setTimeout(() => {
-      console.log(`⏳ Preparing : Queue name ${nameQueue} ${job.id}`);
-      job.reportProgress(10);
-    }, 1500);
+      console.log(`⏱️  Preparing : Queue name ${nameQueue} ${job.id}`)
+      job.reportProgress(10)
+    }, 1500)
 
-    let timer = setInterval(() => {
-      if (cooked < job.id) {
-        cooked++;
-        console.log(`⌛ Progress : Queue name ${nameQueue} ${job.id}`);
-        job.reportProgress(((cooked / job.id) * 90) + 10);
-      } else {
-        clearInterval(timer);
-        console.log(`🧾 Success : Queue name ${nameQueue} ${job.id} ready sending to user : ${user.fullname}`);
-        job.reportProgress(100);
-        done();
+    const resultJob = await method(query, user, reply)
+    const timer = setInterval(() => {
+      clearInterval(timer)
+      console.log(`🧾 Success : Queue name ${nameQueue} ${job.id} ready sending to user : ${user.fullname}`)
+      job.reportProgress(100)
+      done()
 
-        // notify job in here
-      }
-    }, time * 60 * 1000);
-  });
+      // notify job and attempt to send the mail
+      const options = [{
+        filename: resultJob.filename,
+        content: fs.createReadStream(resultJob.path),
+        path: resultJob.path,
+        contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      }]
+
+      sendEmailWithAttachment(message, options, user, resultJob.path)
+    }, time * 60 * 1000)
+  })
 }
 
 module.exports = {

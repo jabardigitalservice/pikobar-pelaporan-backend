@@ -12,6 +12,15 @@ const generateExcell = (data, title, fullName, reply) => {
   return fs.unlinkSync(fileName)
 }
 
+const generateExcellPath = (data, title, fullName) => {
+  const fileName = `${title}-${fullName}-${moment().format("YYYY-MM-DD-HH-mm")}.xlsx`
+  const path = `./tmp/cases/${fileName}`
+  const jsonXls = json2xls(data)
+  fs.writeFileSync(path, jsonXls, 'binary')
+  
+  return { filename: fileName, path, data: jsonXls }
+}
+
 module.exports = {
-  generateExcell
+  generateExcell, generateExcellPath
 }
