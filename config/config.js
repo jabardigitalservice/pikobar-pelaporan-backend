@@ -28,7 +28,7 @@ conf.sentry = {
   dsn: process.env.SENTRY_DSN,
   attachStacktrace: true,
   debug: true,
-  environment: process.env.NODE_ENV
+  environment: process.env.NODE_ENV || 'LOCAL'
 }
 
 conf.firebase = {

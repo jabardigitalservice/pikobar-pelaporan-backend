@@ -1,8 +1,8 @@
-const { replyHelper, successResponse } = require('../helpers');
+const { constructErrorResponse, successResponse } = require('../helpers');
 
 const unitService = (server, name, method, req, request, reply) => {
   server.methods.services[name][method](req, (err, result) => {
-    if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
+    if (err) return reply(constructErrorResponse(err)).code(422)
       return reply(
         successResponse(result, request)
       ).code(200)

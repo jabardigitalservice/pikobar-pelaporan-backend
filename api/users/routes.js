@@ -14,7 +14,7 @@ const filterConfig = (validation, output, description, role) => {
 
 module.exports = (server) => {
   const handlers = require('./handlers')(server)
-
+  const { routeOldNoPre, routeWithPreOld } = require('../../helpers/routes')
   const CheckRoleView = require('./route_prerequesites').CheckRoleView(server)
   const CheckRoleCreate = require('./route_prerequesites').CheckRoleCreate(server)
   const CheckRoleUpdate = require('./route_prerequesites').CheckRoleUpdate(server)
@@ -183,29 +183,8 @@ module.exports = (server) => {
       handler: handlers.loginUser
     },
     // Get case name and id
-    {
-      method: 'GET',
-      path: '/users-listid',
-      config: {
-        auth: 'jwt',
-        description: 'Get user fullname and id',
-        tags: ['api', 'users']
-      },
-      handler: handlers.getListUserIds
-    },
+    routeOldNoPre(server, 'GET', '/users-listid', 'users', 'getListUserIds'),
     // Update fcm token
-    {
-      method: 'POST',
-      path: '/users/{id}/devices',
-      config: {
-        auth: 'jwt',
-        description: 'update user device',
-        tags: ['api', 'users'],
-        pre: [
-          CheckRoleUpdate
-        ]
-      },
-      handler: handlers.updateUserDevice
-    },
+    routeWithPreOld(server, 'POST', '/users/{id}/devices', 'users', CheckRoleUpdate, 'updateUserDevice'),
   ]
 }
