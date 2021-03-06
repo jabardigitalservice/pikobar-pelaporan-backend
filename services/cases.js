@@ -190,34 +190,37 @@ function getIdCase (query,callback) {
 
 async function getCaseSummary(query, user, callback) {
   try {
-    // const caseAuthors = await thisUnitCaseAuthors(user)
-    // const scope = Check.countByRole(user, caseAuthors)
-    // const filter = await Filter.filterCase(user, query)
-    // const searching = Object.assign(scope, filter)
-    // const { sumFuncNoMatch } = require('../helpers/aggregate/func')
-    // const conditions = [
-    //   { $match: {
-    //     $and: [  searching, { ...WHERE_GLOBAL, last_history: { $exists: true, $ne: null } } ]
-    //   }},
-    //   {
-    //     $group: {
-    //       _id: 'status',
-    //       confirmed: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.CONF] }]),
-    //       probable: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.PROB] }]),
-    //       suspect: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.SUS] }]),
-    //       closeContact: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.CLOSE] }]),
-    //     },
-    //   },{ $project: { _id : 0 } },
-    // ]
-    // const result = await Case.aggregate(conditions)
-    // callback(null, result.shift())
+    if (process.env.MAINTENANCE_SUMMARY_LIST_CASE === 'OFF') {
+    const caseAuthors = await thisUnitCaseAuthors(user)
+    const scope = Check.countByRole(user, caseAuthors)
+    const filter = await Filter.filterCase(user, query)
+    const searching = Object.assign(scope, filter)
+    const { sumFuncNoMatch } = require('../helpers/aggregate/func')
+    const conditions = [
+      { $match: {
+        $and: [  searching, { ...WHERE_GLOBAL, last_history: { $exists: true, $ne: null } } ]
+      }},
+      {
+        $group: {
+          _id: 'status',
+          confirmed: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.CONF] }]),
+          probable: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.PROB] }]),
+          suspect: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.SUS] }]),
+          closeContact: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.CLOSE] }]),
+        },
+      },{ $project: { _id : 0 } },
+    ]
+    const result = await Case.aggregate(conditions)
+    callback(null, result.shift())
+  } else {
     // todo handler under maintenance
     callback(null, {
-      "confirmed": 0,
-      "probable": 0,
-      "suspect": 0,
-      "closeContact": 0
-  })
+        "confirmed": 0,
+        "probable": 0,
+        "suspect": 0,
+        "closeContact": 0
+    })
+  }
   } catch (e) {
     callback(e, null)
   }
