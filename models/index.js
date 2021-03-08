@@ -26,6 +26,7 @@ const register = (server, options, next) => {
     require('./CloseContactHistory'),
     require('./Specimen'),
     require('./UserDevice'),
+    require('./LogSelfReport')
 
     server.app.db = {
       link: db.db,
@@ -44,6 +45,7 @@ const register = (server, options, next) => {
       CloseContact: db.model('CloseContact'),
       Specimen: db.model('Specimen'),
       UserDevice: db.model('UserDevice'),
+      LogSelfReport: db.model('LogSelfReport'),
     };
 
     return next();

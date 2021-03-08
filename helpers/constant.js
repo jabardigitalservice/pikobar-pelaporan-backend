@@ -36,7 +36,13 @@ module.exports = {
     CLOSE_ID: 'Kontak Erat',
     SUS_ID: 'Suspek',
     PROB_ID: 'Probable',
-    CONF_ID: 'Konfirmasi'
+    CONF_ID: 'Konfirmasi',
+  },
+  PUBSUB:{
+    OTG: 'CLOSECONTACT',
+    CONFIRMED: 'CONFIRMATION',
+    PDP: 'SUSPECT',
+    ODP: 'PROBABLE'
   },
   INCOME:{
     NO_INCONME: 'Tidak ber penghasilan',

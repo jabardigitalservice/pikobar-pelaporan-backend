@@ -57,6 +57,16 @@ const routeWithPre = (server, method, path, description, role, callback) => {
   }
 }
 
+const routeWithPreOld = (server, method, path, description, role, callback) => {
+  const handlers = require(`../../api/${description}/handlers`)(server)
+  return {
+    method: method,
+    path: path,
+    config: configRoute(description, description, role),
+    handler: handlers[callback],
+  }
+}
+
 const configRouteComplete = (method, path, validates, pre, tag, callback)=> {
   return {
     method: method,
@@ -74,5 +84,5 @@ const configRouteComplete = (method, path, validates, pre, tag, callback)=> {
 
 module. exports = {
   configRoute, configWithValidation, routeOldNoPre,
-  routeNoPreNew, configRouteComplete, routeWithPre
+  routeNoPreNew, configRouteComplete, routeWithPre, routeWithPreOld
 }

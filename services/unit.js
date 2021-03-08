@@ -1,15 +1,30 @@
-const Unit = require('../models/Unit');
-const paginate = require('../helpers/paginate');
-const custom = require('../helpers/custom');
-const filters = require('../helpers/filter/unitfilter');
+const Unit = require('../models/Unit')
+const paginate = require('../helpers/paginate')
+const custom = require('../helpers/custom')
+const { filterUnit, filterSearch } = require('../helpers/filter/unitfilter')
 
 const listUnit = async (query, callback) => {
+  try {
+    const sorts = (query.sort == "desc" ? { createdAt: "desc" } : custom.jsonParse(query.sort))
+    const params = filterUnit(query)
+    const search_params = filterSearch(query)
+
+    const result = await Unit.find(params).or(search_params)
+                        .where('delete_status').ne('deleted')
+                        .sort(sorts).lean()
+    callback(null, { "itemsList": result })
+  } catch (error) {
+    callback(error, null)
+  }
+}
+
+const listUnitBackup = async (query, callback) => {
   try {
     const sorts = (query.sort == "desc" ? { createdAt: "desc" } : custom.jsonParse(query.sort));
     const populate = (['createdBy']);
     const options = paginate.optionsLabel(query, sorts, populate);
-    const params = filters.filterUnit(query);
-    const search_params = filters.filterSearch(query);
+    const params = filterUnit(query);
+    const search_params = filterSearch(query);
     const result = Unit.find(params).or(search_params).where('delete_status').ne('deleted');
     const paginateResult = await Unit.paginate(result, options);
     callback(null, paginateResult);

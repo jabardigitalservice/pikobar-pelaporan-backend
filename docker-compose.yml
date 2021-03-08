@@ -14,7 +14,7 @@ services:
         - mongodb_config:/data/configdb
     networks:
       - crowdsource-api-network
-   
+
   backend:
     image: ${I_API}
     build:
@@ -22,23 +22,23 @@ services:
         dockerfile: Dockerfile
     ports:
         - "3333:3333"
-    volumes: 
+    volumes:
         - .:/app
         - /app/node_modules
-    links: 
+    links:
         - mongo
     restart: always
-    depends_on: 
+    depends_on:
         - mongo
-    environment: 
+    environment:
         MONGODB_URI: ${MONGO_DB_URI}
-    networks: 
+    networks:
         - crowdsource-api-network
 
 volumes:
     mongodb:
     mongodb_config:
 
-networks: 
+networks:
     crowdsource-api-network:
       driver: bridge

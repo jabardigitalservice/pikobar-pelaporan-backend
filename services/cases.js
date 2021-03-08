@@ -11,8 +11,10 @@ const CloseContact = require('../models/CloseContact')
 const { doUpdateEmbeddedClosecontactDoc } = require('../helpers/cases/setters')
 const { sqlCondition, excellOutput } = require('../helpers/filter/exportfilter')
 const { CRITERIA, WHERE_GLOBAL } = require('../helpers/constant')
+const { summaryCondition } = require('../helpers/cases/global')
 const moment = require('moment')
 const { clientConfig } = require('../config/redis')
+
 async function ListCase (query, user, callback) {
 
   const myCustomLabels = {
@@ -240,9 +242,9 @@ async function getCaseSummaryVerification (query, user, callback) {
   let result =  { 'PENDING': 0, 'DECLINED': 0, 'VERIFIED': 0 }
   Case.aggregate(aggStatus).exec().then(async item => {
       item.forEach(function(item){
-        if (item['_id'] == 'pending') result.PENDING = item['total']
-        if (item['_id'] == 'declined') result.DECLINED = item['total']
-        if (item['_id'] == 'verified') result.VERIFIED = item['total']
+        summaryCondition(item, 'pending', result, 'PENDING')
+        summaryCondition(item, 'declined', result, 'DECLINED')
+        summaryCondition(item, 'verified', result, 'VERIFIED')
       })
       return callback(null, result)
     })
