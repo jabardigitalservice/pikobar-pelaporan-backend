@@ -60,9 +60,6 @@ const manifest = {
       plugin: 'hapi-auth-jwt2'
     },
     {
-      plugin: './integration'
-    },
-    {
       plugin: './auth'
     },
     {
