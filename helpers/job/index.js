@@ -16,9 +16,10 @@ const createJobQueue = (nameQueue, query, user, method, message, time) => {
       job.reportProgress(10)
     }, 1500)
 
-    const resultJob = await method(query, user)
-    const timer = setInterval(() => {
+    const timer = setInterval(async () => {
       clearInterval(timer)
+      const resultJob = await method(query, user)
+
       console.log(`🧾 Success : Queue name ${nameQueue} ${job.id} ready sending to user : ${user.fullname}`)
       job.reportProgress(100)
       done()
