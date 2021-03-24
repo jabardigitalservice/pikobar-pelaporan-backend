@@ -13,7 +13,7 @@ const { sqlCondition, excellOutput } = require('../helpers/filter/exportfilter')
 const { CRITERIA, WHERE_GLOBAL } = require('../helpers/constant')
 const { summaryCondition } = require('../helpers/cases/global')
 const moment = require('moment')
-
+const { clientConfig } = require('../config/redis')
 async function ListCase (query, user, callback) {
 
   const myCustomLabels = {
@@ -183,27 +183,36 @@ function getIdCase (query,callback) {
 
 async function getCaseSummary(query, user, callback) {
   try {
-    const caseAuthors = await thisUnitCaseAuthors(user)
-    const scope = Check.countByRole(user, caseAuthors)
-    const filter = await Filter.filterCase(user, query)
-    const searching = Object.assign(scope, filter)
-    const { sumFuncNoMatch } = require('../helpers/aggregate/func')
-    const conditions = [
-      { $match: {
-        $and: [  searching, { ...WHERE_GLOBAL, last_history: { $exists: true, $ne: null } } ]
-      }},
-      {
-        $group: {
-          _id: 'status',
-          confirmed: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.CONF] }]),
-          probable: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.PROB] }]),
-          suspect: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.SUS] }]),
-          closeContact: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.CLOSE] }]),
-        },
-      },{ $project: { _id : 0 } },
-    ]
-    const result = await Case.aggregate(conditions)
-    callback(null, result.shift())
+    clientConfig.get(`summary-cases-list-${user.username}`, async (err, result) => {
+      const caseAuthors = await thisUnitCaseAuthors(user)
+      const scope = Check.countByRole(user, caseAuthors)
+      const filter = await Filter.filterCase(user, query)
+      const searching = Object.assign(scope, filter)
+      const { sumFuncNoMatch } = require('../helpers/aggregate/func')
+      if(result){
+        const resultJSON = JSON.parse(result)
+        callback(null, resultJSON)
+      }else{
+        const conditions = [
+          { $match: {
+            $and: [  searching, { ...WHERE_GLOBAL, last_history: { $exists: true, $ne: null } } ]
+          }},
+          {
+            $group: {
+              _id: 'status',
+              confirmed: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.CONF] }]),
+              probable: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.PROB] }]),
+              suspect: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.SUS] }]),
+              closeContact: sumFuncNoMatch([{ $eq: ['$status', CRITERIA.CLOSE] }]),
+            },
+          },{ $project: { _id : 0 } },
+        ]
+        const result = await Case.aggregate(conditions)
+        const shiftResult = result.shift()
+        clientConfig.setex(`summary-cases-list-${user.username}`, 15 * 60 * 1000, JSON.stringify(shiftResult)) // set redis key
+        callback(null, shiftResult)
+      }
+    })
   } catch (e) {
     callback(e, null)
   }

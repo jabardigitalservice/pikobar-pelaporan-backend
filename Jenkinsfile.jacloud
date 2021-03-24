@@ -24,6 +24,9 @@ def secretsProd = [
 
     [envVar: 'APP_CONVERT', vaultKey: 'APP_CONVERT'],
 
+    [envVar: 'REDIS_HOST', vaultKey: 'REDIS_HOST'],
+    [envVar: 'REDIS_PORT', vaultKey: 'REDIS_PORT'],
+
     [envVar: 'FIREBASE_DEBUG', vaultKey: 'FIREBASE_DEBUG'],
     [envVar: 'FIREBASE_PROJECT_ID', vaultKey: 'FIREBASE_PROJECT_ID'],
     [envVar: 'FIREBASE_PRIVATE_KEY_ID', vaultKey: 'FIREBASE_PRIVATE_KEY_ID'],
@@ -149,6 +152,8 @@ pipeline {
 
                         sh 'sed -i "s/%FIREBASE_PRIVATE_KEY%/${FIREBASE_PRIVATE_KEY}/g" kubernetes/production/configmap-pelaporan-api.yaml'
 
+                        sh 'sed -i "s/%REDIS_HOST%/${REDIS_HOST}/g" kubernetes/production/configmap-pelaporan-api.yaml'
+                        sh 'sed -i "s/%REDIS_PORT%/${REDIS_PORT}/g" kubernetes/production/configmap-pelaporan-api.yaml'
              
                         sh 'sed -i "s/%SMS_KEY%/${SMS_KEY}/g" kubernetes/production/secret-pelaporan-api.yaml'
                         sh 'sed -i "s/%WA_TOKEN%/${WA_TOKEN}/g" kubernetes/production/secret-pelaporan-api.yaml'
