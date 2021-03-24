@@ -1,5 +1,4 @@
 const Queue = require('bee-queue')
-
 const options = {
   isWorker: false,
   sendEvents: false,
@@ -9,11 +8,20 @@ const options = {
   },
 }
 
-const createQueue = async (nameQueue, nameJob) => {
+const createQueue = async (nameQueue, nameJob, batchId) => {
   const initialQueue = new Queue(nameQueue, options)
-  return initialQueue.createJob(nameJob).save()
+  return initialQueue.createJob(nameJob).setId(batchId).save()
+}
+
+const cancelQueue = async (nameQueue, jobId) => {
+  const initialQueue = new Queue(nameQueue, options)
+  try {
+    return await initialQueue.removeJob(jobId)
+  } catch (error) {
+    return error
+  }
 }
 
 module.exports = {
-  createQueue
+  createQueue, cancelQueue
 }

@@ -192,5 +192,14 @@ module.exports = {
   },MONTH:{
     EN: ['January','February','March','April','May','June','July',
     'August','September','October','November','December']
+  },QUEUE:{
+    CASE: 'queue-export-cases',
+    HISTORY: 'queue-export-histories'
+  },
+  SUBJECT_NAME:'Aplikasi Pelaporan Kasus Pikobar',
+  TEXT_EMAIL:'Berikut Adalah Data Excell Hasil Export Dari Aplikasi Pelaporan Kasus Pikobar',
+  JOB:{
+    CASE: 'job-export-cases',
+    HISTORY: 'job-export-histories'
   }
 }

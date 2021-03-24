@@ -1,6 +1,21 @@
-const Queue = require('bee-queue')
-const { sendEmailWithAttachment } = require('../email')
-const { updateLogJob } = require('./log')
+## HOW TO USE
+
+documentation of beequee [https://github.com/bee-queue/bee-queue](https://github.com/bee-queue/bee-queue)
+
+### CODE QUALITY (CODE OF CONDUCT)
+This custom function for globally package bee-queue redis job working using email for notify if progress is done
+
+```javascript
+/**
+ *
+ *
+ * @param {*} nameQueue
+ * @param {*} query
+ * @param {*} user
+ * @param {*} method
+ * @param {*} message
+ * @param {*} time
+ */
 const options = {
   activateDelayedJobs: true,
   redis: {
@@ -46,7 +61,13 @@ const createJobQueue = async (nameQueue, query, user, method, message, time) => 
     await updateLogJob(job.id, param) // save job error
   }
 }
+```
 
-module.exports = {
-  createJobQueue
+example in your service
+
+```javascript
+const { createJobQueue } = require('helpers/job')
+const queuSomething = async () => {
+  await createJobQueue('name-queue', query, user, method, message, time)
 }
+```

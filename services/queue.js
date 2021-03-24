@@ -1,8 +1,21 @@
 
 const service = 'services.queue'
-const { createQueue } = require('../helpers/queue')
+const { createQueue, cancelQueue } = require('../helpers/queue')
 const { createJobQueue } = require('../helpers/job')
-const { jobCaseExport } = require('../helpers/job/export_xlsx')
+const { createLogJob, updateLogJob, createHistoryEmail } = require('../helpers/job/log')
+const { jobCaseExport, jobHistoryExport } = require('../helpers/job/export_xlsx')
+const { QUEUE, JOB } = require('../helpers/constant')
+const User = require('../models/User')
+const LogQueue = require('../models/LogQueue')
+const { filterLogQueue } = require('../helpers/filter/log')
+const { jsonPagination } = require('../utils')
+const { readFileFromBucket } = require('../config/aws')
+const { sendEmailWithAttachment } = require('../helpers/email')
+const select = [
+  'email','createdAt', 'job_id', 'job_status', 'job_progress', 'file_name'
+]
+let param = {}
+let searchParam = [{}]
 
 const mapingResult = (result) => {
   const data = {}
@@ -15,33 +28,103 @@ const mapingResult = (result) => {
   return data
 }
 
-const sameCondition = async (queue, job, callback) => {
+const sameCondition = async (query, user, queue, job, method, name, time, callback) => {
   try {
-    const result = await createQueue(queue, job)
+    const batchId = require('uuid').v4()
+    const result = await createQueue(queue, job, batchId)
+    //save user and status job
+    await createLogJob(10, batchId, job, queue, query, user)
+    await User.findByIdAndUpdate(user.id, { $set: { email: query.email } })
     const data = mapingResult(result)
     callback (null, data)
+
+    const message = `Data${name}Kasus Pikobar Pelaporan : ${user.fullname}`
+    await createJobQueue(queue, query, user, method, message, time)
   } catch (error) {
     callback(error, null)
   }
 }
 
 const caseExport = async (query, user, callback) => {
-  const nameQueue = 'queue-export-cases'
-  const nameJob = 'job-export-cases'
-  const message = `Data Kasus Pikobar Pelaporan : ${user.fullname}`
-
-  await sameCondition(nameQueue, nameJob, callback)
-  createJobQueue(nameQueue, query, user, jobCaseExport, message, 1)
+  await sameCondition(
+    query, user, QUEUE.CASE, JOB.CASE, jobCaseExport, ' ', 1, callback
+  )
 }
 
 const historyExport = async (query, user, callback) => {
-  const nameQueue = 'queue-export-histories'
-  const nameJob = 'job-export-histories'
-
-  await sameCondition(nameQueue, nameJob, callback)
+  await sameCondition(
+    query, user, QUEUE.HISTORY, JOB.HISTORY, jobHistoryExport, ' Riwayat ', 1, callback
+  )
 }
+
+const listExport = async (query, user, callback) => {
+  try {
+    if(query.search) searchParam = [ { file_name : new RegExp(query.search,"i") }]
+    const page = parseInt(query.page) || 1
+    const limit = parseInt(query.limit) || 100
+    const result = await LogQueue.find(filterLogQueue(user, query))
+    .or(searchParam).select(select).sort({ '_id' : -1 })
+    .limit(limit).skip((limit * page) - limit).lean()
+    const count = await LogQueue.estimatedDocumentCount()
+    const countPerPage = Math.ceil(count / limit)
+    const dataMapping = { result, page, countPerPage, count, limit }
+    callback(null, jsonPagination('history', dataMapping))
+  } catch (error) {
+    callback(error, nul)
+  }
+}
+
+const resendFile = async (params, payload, user, callback) => {
+  try {
+    let bucketName
+    if(payload.name === JOB.CASE){
+      bucketName = process.env.CASE_BUCKET_NAME
+    } else {
+      bucketName = process.env.HISTORY_BUCKET_NAME
+    }
+    const getFile = await readFileFromBucket(bucketName, payload.file_name)
+    const options = [{
+      filename: payload.file_name,
+      content: getFile.Body,
+      contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    }]
+    sendEmailWithAttachment(
+      "Data Kasus Pikobar Pelaporan", options, payload.email, '', params.jobid
+    )
+    await createHistoryEmail(payload, params.jobid)
+    callback(null, `data send to ${payload.email}`)
+  } catch (error) {
+    callback(error, null)
+  }
+}
+
+const cancelJob = async (query, payload, callback) => {
+  try {
+    await cancelQueue(payload.name, query.jobid)
+    await updateLogJob(query.jobid, { job_status: 'Canceled' })
+    callback(null, `job id ${query.jobid} canceled`)
+  } catch (error) {
+    callback(error, null)
+  }
+}
+
+const historyEmail = async (params, payload, user, callback) => {
+  try {
+    const result = await LogQueue.find({ job_id: params.jobid })
+    .select(['history'])
+    .sort({ updatedAt: -1 })
+    .lean()
+    callback(null, result.shift())
+  } catch (error) {
+    callback(error, null)
+  }
+}
+
 
 module.exports = [
   { name: `${service}.queuCase`, method: caseExport },
   { name: `${service}.queuHistory`, method: historyExport },
+  { name: `${service}.listExport`, method: listExport },
+  { name: `${service}.resendFile`, method: resendFile },
+  { name: `${service}.historyEmail`, method: historyEmail },
 ]
