@@ -1,10 +1,10 @@
 const Case = require('../models/Case')
 const Check = require('../helpers/rolecheck')
 const Filter = require('../helpers/filter/casefilter')
-const { WHERE_GLOBAL } = require('../helpers/constant')
+const { WHERE_GLOBAL, ROLE } = require('../helpers/constant')
 const { filterEdges, filterNodes } = require('../helpers/filter/relatedfilter')
 const { patientStatus } = require('../helpers/custom')
-
+const { clientConfig } = require('../config/redis')
 const whereRole = (user) => {
   return {
       ...Check.countByRole(user),
@@ -124,7 +124,7 @@ const condition = async (query, user) => {
   return aggregateCondition
 }
 
-const listCaseRelated = async (query, user, callback) => {
+const listQuery = async (query, user) => {
   try {
     const aggregateCondition = await condition(query, user)
     const res = await Case.aggregate(aggregateCondition)
@@ -143,10 +143,35 @@ const listCaseRelated = async (query, user, callback) => {
     // combine array object
     const resultEdges = resultEdgesFrom.concat(filterOutput)
     const resultNodes = filterNodes(res)
-    const resultJson = {
-      "edges": resultEdges, "nodes": resultNodes
-    };
-    callback(null, resultJson)
+    const resultJson = { "edges": resultEdges, "nodes": resultNodes }
+
+    return resultJson
+  } catch (error) {
+    return error
+  }
+}
+const listCaseRelated = async (query, user, callback) => {
+  const expireTime = 15 * 60 * 1000 // 15 minute expire
+  let key
+  if([ROLE.ADMIN, ROLE.PROVINCE].includes(user.role)){
+    key = `related-map-${user.username}-${user.code_district_city}`
+  }else if([ROLE.KOTAKAB].includes(user.role)){
+    key = `related-map-${user.username}-${user.code_district_city}`
+  }else{
+    key = `related-map-${user.id}-${user.code_district_city}`
+  }
+  try {
+    clientConfig.get(key, async (err, result) => {
+      if(result){
+        callback(null, JSON.parse(result))
+        console.info(`redis source ${key}`)
+      }else{
+        const row = await listQuery(query, user)
+        clientConfig.setex(key, expireTime, JSON.stringify(row)) // set redis key
+        callback(null, row)
+        console.info(`api source ${key}`)
+      }
+    })
   } catch (error) {
     callback(error, null)
   }

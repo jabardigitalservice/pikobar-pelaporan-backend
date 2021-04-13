@@ -6,6 +6,7 @@ module.exports = {
     ACT_SYSTEM_UPDATES: 'system-updates',
   },
   EVENT_TYPE: {
+    EVT_INTEGRATION_LABKES: 'CreateCaseIntegrationLabkes',
     EVT_CASE_CREATED: 'CaseCreated',
     EVT_CASE_REVISED: 'CasePending',
     EVT_CASE_VERIFIED: 'CaseVerified',
@@ -36,7 +37,13 @@ module.exports = {
     CLOSE_ID: 'Kontak Erat',
     SUS_ID: 'Suspek',
     PROB_ID: 'Probable',
-    CONF_ID: 'Konfirmasi'
+    CONF_ID: 'Konfirmasi',
+  },
+  PUBSUB:{
+    OTG: 'CLOSECONTACT',
+    CONFIRMED: 'CONFIRMATION',
+    PDP: 'SUSPECT',
+    ODP: 'PROBABLE'
   },
   INCOME:{
     NO_INCONME: 'Tidak ber penghasilan',
@@ -192,5 +199,15 @@ module.exports = {
   },MONTH:{
     EN: ['January','February','March','April','May','June','July',
     'August','September','October','November','December']
+  },
+  QUEUE:{
+    CASE: 'queue-export-cases',
+    HISTORY: 'queue-export-histories'
+  },
+  SUBJECT_NAME:'Aplikasi Pelaporan Kasus Pikobar',
+  TEXT_EMAIL:'Berikut Adalah Data Excell Hasil Export Dari Aplikasi Pelaporan Kasus Pikobar',
+  JOB:{
+    CASE: 'job-export-cases',
+    HISTORY: 'job-export-histories'
   }
 }

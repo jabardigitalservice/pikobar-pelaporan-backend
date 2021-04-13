@@ -13,7 +13,10 @@ typings
 .idea
 npm-debug.log
 /.nyc_output
-
+docker-compose-redis.yml
 Dockerfile
 
 jabarprov-covid19-4bd92b90f680.json
+
+
+*.xlsx

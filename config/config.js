@@ -28,7 +28,7 @@ conf.sentry = {
   dsn: process.env.SENTRY_DSN,
   attachStacktrace: true,
   debug: true,
-  environment: process.env.NODE_ENV
+  environment: process.env.NODE_ENV || 'LOCAL'
 }
 
 conf.firebase = {
@@ -44,6 +44,22 @@ conf.firebase = {
   client_x509_cert_url: process.env.FIREBASE_DATABASE_URL,
   debug: process.env.FIREBASE_DEBUG === 'true'
 };
+
+conf.pubsub = {
+    projectId: process.env.PUBSUB_PROJECT_ID,
+    credentials: {
+      type: "service_account",
+      project_id : process.env.PUBSUB_PROJECT_ID,
+      private_key_id : process.env.PUBSUB_PRIVATE_KEY_ID,
+      private_key : Buffer.from(process.env.PUBSUB_PRIVATE_KEY, 'base64').toString(),
+      client_email : process.env.PUBSUB_CLIENT_EMAIL,
+      client_id : process.env.PUBSUB_CLIENT_ID,
+      auth_uri : process.env.PUBSUB_AUTH_URI,
+      token_uri : process.env.PUBSUB_TOKEN_URI,
+      auth_provider_x509_cert_url : process.env.PUBSUB_AUTH_PROVIDER_X509_CERT_URL,
+      client_x509_cert_url : process.env.PUBSUB_CLIENT_X509_CERT_URL
+    }
+}
 
 
 module.exports = conf;

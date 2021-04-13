@@ -47,7 +47,7 @@ async function ListCase (query, user, type, callback) {
 async function getCasetransfers (caseId, callback) {
   try {
     const dbQuery = helper.transferLogsQuery(caseId)
-    let transferLogs = await CaseTransfer.aggregate(dbQuery)   
+    let transferLogs = await CaseTransfer.aggregate(dbQuery)
     return callback(null, transferLogs)
   } catch (error) {
     return callback(error, null)
@@ -67,7 +67,7 @@ async function createCaseTransfer (caseId, auth, pre, req, callback) {
     await Case.findOneAndUpdate({ _id: caseId}, {
       $set: {
         transfer_status: req.transfer_status,
-        transfer_to_unit_id: req.transfer_to_unit_id  
+        transfer_to_unit_id: req.transfer_to_unit_id
       }
     })
 
@@ -79,7 +79,7 @@ async function createCaseTransfer (caseId, auth, pre, req, callback) {
     const item = new CaseTransfer(req)
 
     const caseTransfer = await item.save()
-    
+
     return callback(null, caseTransfer)
   } catch (error) {
     return callback(error, null)
@@ -87,15 +87,12 @@ async function createCaseTransfer (caseId, auth, pre, req, callback) {
 }
 
 async function processTransfer (transferId, caseId, act, auth, req = {}, callback) {
-  
   try {
     let detail = await CaseTransfer.findById(transferId)
     const detailCase = await Case.findById(caseId).populate('last_history')
-
     if(detail) {
       await helper.setFalseAllThisCaseTransferLogs(
-        CaseTransfer,
-        caseId,
+        CaseTransfer, caseId,
         detail.transfer_from_unit_id,
         req.transfer_to_unit_id || detail.transfer_to_unit_id
       )
@@ -103,22 +100,13 @@ async function processTransfer (transferId, caseId, act, auth, req = {}, callbac
 
     let casePayload = await helper.buildUpdateCasePayload(
       act, auth, caseId, req, CaseTransfer, detail)
-
     let transferCasePayload = helper.buildTransferCasePaylod(
       detailCase, detail, auth, req)
-
     const { transfer_to_unit_name, ...caseUpdatePayload } = casePayload
-    await Case.findOneAndUpdate({ _id: caseId }, {
-      $set: caseUpdatePayload
-    })
-    
-    if (act === 'abort') {
-      return actionAbort(CaseTransfer, caseId, auth, callback)
-    }
-
+    await Case.findOneAndUpdate({ _id: caseId }, { $set: caseUpdatePayload })
+    if (act === 'abort') return actionAbort(CaseTransfer, caseId, auth, callback)
     const item = new CaseTransfer(Object.assign(casePayload, transferCasePayload))
-    const results = await item.save()  
-
+    const results = await item.save()
     return callback(null, results)
   } catch (error) {
     return callback(error, null)
@@ -153,30 +141,16 @@ async function geTransferCaseSummary (type, user, callback) {
     { $match: params },
     { $group: { _id: "$transfer_status", total: {$sum: 1}} }
   ]
-  
-  let result =  {
-    'PENDING': 0, 
-    'DECLINED': 0,
-    'APPROVED': 0
-  }
+  let result =  { 'PENDING': 0, 'DECLINED': 0, 'APPROVED': 0 }
 
   CaseTransfer.aggregate(dbQuery).exec().then(async item => {
-
-      item.forEach(function(item){
-        if (item['_id'] == 'pending') {
-          result.PENDING = item['total']
-        }
-        if (item['_id'] == 'declined') {
-          result.DECLINED = item['total']
-        }
-        if (item['_id'] == 'approved') {
-          result.APPROVED = item['total']
-        }
-      })
-
-      return callback(null, result)
+    item.forEach(function(item){
+      if (item['_id'] == 'pending') result.PENDING = item['total']
+      if (item['_id'] == 'declined') result.DECLINED = item['total']
+      if (item['_id'] == 'approved') result.APPROVED = item['total']
     })
-    .catch(err => callback(err, null))
+    return callback(null, result)
+  }).catch(err => callback(err, null))
 }
 
 function getTransferCaseById (id, callback) {

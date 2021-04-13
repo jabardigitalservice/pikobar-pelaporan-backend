@@ -2,8 +2,8 @@ const Occupation = require('../models/Occupation')
 
 const getOccupationList = async (request, callback) => {
   try {
-    const result = await Occupation.find().sort({ seq: 'asc' })
-    callback(null, result.map(q => q.toJSONFor()))
+    const result = await Occupation.find().sort({ seq: 'asc' }).lean()
+    callback(null, result)
   } catch (error) {
     callback(error, null)
   }
@@ -12,7 +12,7 @@ const getOccupationList = async (request, callback) => {
 const getOccupationDetail = async (request, callback) => {
   let id = request.params.id
   try {
-    const result = await Occupation.findOne({ _id : id })
+    const result = await Occupation.findOne({ _id : id }).lean()
     callback(null, result)
   } catch (error) {
     callback(error, null)

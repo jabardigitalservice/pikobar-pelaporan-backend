@@ -46,6 +46,29 @@ const sqlCondition = (params, search, query) => {
   ]
 }
 
+const sqlCaseExport = (params, search, query) => {
+  const searching = Object.keys(search).length == 0 ? [search] : search
+  const createdAt = dateFilter(query, "createdAt")
+  const andParam = { ...createdAt, ...params }
+  return [
+    {
+      $match: {
+        $and : [ andParam ],
+        $or : searching
+      }
+    },
+    { ...author }, { ...histories },
+    { $unwind: '$author_list' },{ $unwind: '$history_list' },
+    {
+      "$project": {
+        ...columnInfo,
+        ...columnIdentity,
+        ...columnAuthor
+      }
+    }
+  ]
+}
+
 module.exports = {
-  excellOutput, sqlCondition
+  excellOutput, sqlCondition, sqlCaseExport
 }

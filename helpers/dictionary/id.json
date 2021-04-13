@@ -75,6 +75,7 @@
     "empty_data": "Ada kesalahan dalam import data, Tidak ada data pada file yang Anda unggah. Silakan periksa kembali data Anda!"
   },
   "titles": {
+    "integration_labkes_created": "Kasus Draft baru yang perlu di edit",
     "case_has_been_verified": "Kasus Berhasil diverifikasi",
     "case_has_been_declined": "Kasus ditolak",
     "faskes_cases_created": "Pengajuan Kasus Baru Dari faskes",

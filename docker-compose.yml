@@ -10,35 +10,47 @@ services:
       - "27017:27017"
     restart: always
     volumes:
-        - mongodb:/data/db
-        - mongodb_config:/data/configdb
+      - mongodb:/data/db
+      - mongodb_config:/data/configdb
     networks:
       - crowdsource-api-network
-   
+
   backend:
     image: ${I_API}
     build:
-        context: .
-        dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile
     ports:
-        - "3333:3333"
-    volumes: 
-        - .:/app
-        - /app/node_modules
-    links: 
-        - mongo
+      - "3333:3333"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    links:
+      - mongo
     restart: always
-    depends_on: 
-        - mongo
-    environment: 
-        MONGODB_URI: ${MONGO_DB_URI}
-    networks: 
-        - crowdsource-api-network
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      MONGODB_URI: ${MONGO_DB_URI}
+    networks:
+      - crowdsource-api-network
+
+  redis:
+    image: ${IMAGE_REDIS}
+    container_name: ${REDIS_CONTAINER_NAME}
+    volumes:
+      - redis_local_pelaporan:/data/redis
+    networks:
+      crowdsource-api-network:
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
 
 volumes:
-    mongodb:
-    mongodb_config:
+  mongodb:
+  mongodb_config:
+  redis_local_pelaporan:
 
-networks: 
-    crowdsource-api-network:
-      driver: bridge
+networks:
+  crowdsource-api-network:
+    driver: bridge
