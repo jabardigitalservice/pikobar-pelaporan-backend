@@ -4,8 +4,7 @@ const Village = require('../models/Village')
 const Unit = require('../models/Unit')
 const Lab = require('../models/Lab')
 const Province = require('../models/Province')
-const { findWithSort } = require('../utils/index')
-
+const { clientConfig } = require('../config/redis')
 const sameCondition = async (schema, condition, sort) => {
   return await schema.find(condition).sort(sort)
 }
@@ -17,47 +16,53 @@ const condition = (kecamatan_kode) => {
   }
 }
 
-const getDistrictCity = async (request, callback) => {
-  let params = new Object();
+const mapingData = async (schema, params, data, jsonFor) => {
+  const res = await schema.find(params).sort(data.sort)
+  return jsonFor ? res.map(res => res.toJSONFor()) : res
+}
 
-  if (request.kota_kode) {
-    params.kemendagri_kabupaten_kode = request.kota_kode;
-  }
-
-  if (request.provice_code) {
-    params.kemendagri_provinsi_kode = request.provice_code
-  }
-
-  if (!request.status) {
-    params.kemendagri_provinsi_kode = '32'
-  }
-
-  if (request.kemendagri_provinsi_nama) {
-    params.kemendagri_provinsi_nama = request.kemendagri_provinsi_nama.toUpperCase()
-  }
-
-  const sort = { kemendagri_kabupaten_nama: 'asc' }
+const cacheList = (data, schema, params, callback, jsonFor=true) => {
   try {
-    await findWithSort(Districtcity, params, sort, callback)
+    clientConfig.get(data.key, async (err, result) => {
+      if(result){
+        console.info(`redis source ${data.key}`)
+        return callback(null, JSON.parse(result))
+      }else{
+        const res = await mapingData(schema, params, data, jsonFor)
+        clientConfig.setex(data.key, data.expireTime, JSON.stringify(res)) // set redis key
+        console.info(`api source ${data.key}`)
+        return callback(null, res)
+      }
+    })
   } catch (error) {
-    callback(error, null)
+    return callback(error, null)
   }
 }
 
-const getSubDistrict = async (city_code, request, callback) => {
+const getDistrictCity = async (request, callback) => {
+  let params = new Object()
+  if (request.kota_kode) params.kemendagri_kabupaten_kode = request.kota_kode
+  if (request.provice_code) params.kemendagri_provinsi_kode = request.provice_code
+  if (!request.status) params.kemendagri_provinsi_kode = '32'
+  if (request.kemendagri_provinsi_nama) {
+    params.kemendagri_provinsi_nama = request.kemendagri_provinsi_nama.toUpperCase()
+  }
+  const key = `district-city`
+  const expireTime = 1440 * 60 // 24 hours expire
+  const sort = { kemendagri_kabupaten_nama: 'asc' }
+  const defineKey = { key, expireTime, sort }
+  cacheList(defineKey, Districtcity, params, callback)
+}
+
+const getSubDistrict = async (cityCode, request, callback) => {
   let params = {}
-  params.kemendagri_kabupaten_kode = city_code;
-
-  if (request.kecamatan_kode) {
-    params.kemendagri_kecamatan_kode = request.kecamatan_kode
-  }
-
-  try {
-    const sort = { kemendagri_kecamatan_nama: 'asc' }
-    await findWithSort(SubDistrict, params, sort, callback)
-  } catch (error) {
-    callback(error, null)
-  }
+  params.kemendagri_kabupaten_kode = cityCode
+  if (request.kecamatan_kode) params.kemendagri_kecamatan_kode = request.kecamatan_kode
+  const key = `sub-district-${cityCode}`
+  const expireTime = 1440 * 60 // 24 hours expire
+  const sort = { kemendagri_kecamatan_nama: 'asc' }
+  const defineKey = { key, expireTime, sort }
+  cacheList(defineKey, SubDistrict, params, callback)
 }
 
 const getSubDistrictDetail = async (kecamatan_kode, callback) => {
@@ -77,13 +82,11 @@ const getVillage = async (kecamatan_code, request, callback) => {
   if (request.desa_kode) {
     params.kemendagri_desa_kode = request.desa_kode
   }
-
+  const key = `village-${kecamatan_code}`
+  const expireTime = 1440 * 60 // 24 hours expire
   const sort = { kemendagri_desa_nama: 'asc' }
-  try {
-    await findWithSort(Village, params, sort, callback)
-  } catch (error) {
-    callback(error, null)
-  }
+  const defineKey = { key, expireTime, sort }
+  cacheList(defineKey, Village, params, callback)
 }
 
 const getVillageDetail = async (desa_kode, callback) => {
@@ -98,26 +101,17 @@ const getVillageDetail = async (desa_kode, callback) => {
 }
 
 const getHospital = async (query, callback) => {
-  var params = new Object();
-
-  if (query.search) {
-    params.name = new RegExp(query.search, "i")
-  }
-
-  if (query.city_code) {
-    params.kemendagri_kabupaten_kode = query.city_code
-  }
-
+  let params = new Object()
+  if (query.search) params.name = new RegExp(query.search, "i")
+  if (query.city_code) params.kemendagri_kabupaten_kode = query.city_code
   if (query.rs_jabar) {
     params.rs_jabar = query.rs_jabar === 'true'
   }
-
-  try {
-    const res = await Unit.find(Object.assign(params, { unit_type: 'rumahsakit' }))
-    callback(null, res)
-  } catch (error) {
-    callback(error, null)
-  }
+  const expireTime = 2 * 60 // 15 minute expire rules 1 minute = 60 seconds
+  const key = `hospital-${params.rs_jabar}`
+  const filter = Object.assign(params, { unit_type: 'rumahsakit' })
+  const defineKey = { key, expireTime, sort: { _id: -1 } }
+  cacheList(defineKey, Unit, filter, callback, false)
 }
 
 const mergeHospitalLab = async (query, callback) => {

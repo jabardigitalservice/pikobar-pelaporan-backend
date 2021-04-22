@@ -21,6 +21,7 @@ const filterCase = async (user, query) => {
   if (query.status) { params.status = query.status }
   if (query.final_result) { params.final_result = query.final_result }
   if (query.tool_tester) { params.tool_tester = query.tool_tester }
+  if (query.criteria) { params.status = query.criteria }
   return params;
 }
 
