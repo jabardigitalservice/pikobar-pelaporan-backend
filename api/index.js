@@ -63,6 +63,7 @@ const register = (server, options, next) => {
   server.register(require('./search'))
   server.register(require('./v2/cases'))
   server.register(require('./notifications'))
+  server.register(require('./queue'))
 
   server.ext('onPreResponse', preResponse)
   server.ext('onRequest', onRequest)
