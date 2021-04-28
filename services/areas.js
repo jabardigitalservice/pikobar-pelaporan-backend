@@ -48,7 +48,7 @@ const getDistrictCity = async (request, callback) => {
     params.kemendagri_provinsi_nama = request.kemendagri_provinsi_nama.toUpperCase()
   }
   const key = `district-city`
-  const expireTime = 1440 * 60 * 1000 // 24 hours expire
+  const expireTime = 1440 * 60 // 24 hours expire
   const sort = { kemendagri_kabupaten_nama: 'asc' }
   const defineKey = { key, expireTime, sort }
   cacheList(defineKey, Districtcity, params, callback)
@@ -59,7 +59,7 @@ const getSubDistrict = async (cityCode, request, callback) => {
   params.kemendagri_kabupaten_kode = cityCode
   if (request.kecamatan_kode) params.kemendagri_kecamatan_kode = request.kecamatan_kode
   const key = `sub-district-${cityCode}`
-  const expireTime = 1440 * 60 * 1000 // 24 hours expire
+  const expireTime = 1440 * 60 // 24 hours expire
   const sort = { kemendagri_kecamatan_nama: 'asc' }
   const defineKey = { key, expireTime, sort }
   cacheList(defineKey, SubDistrict, params, callback)
@@ -83,7 +83,7 @@ const getVillage = async (kecamatan_code, request, callback) => {
     params.kemendagri_desa_kode = request.desa_kode
   }
   const key = `village-${kecamatan_code}`
-  const expireTime = 1440 * 60 * 1000 // 24 hours expire
+  const expireTime = 1440 * 60 // 24 hours expire
   const sort = { kemendagri_desa_nama: 'asc' }
   const defineKey = { key, expireTime, sort }
   cacheList(defineKey, Village, params, callback)
@@ -107,7 +107,7 @@ const getHospital = async (query, callback) => {
   if (query.rs_jabar) {
     params.rs_jabar = query.rs_jabar === 'true'
   }
-  const expireTime = 2 * 60 * 1000 // 2 minute expire
+  const expireTime = 2 * 60 // 15 minute expire rules 1 minute = 60 seconds
   const key = `hospital-${params.rs_jabar}`
   const filter = Object.assign(params, { unit_type: 'rumahsakit' })
   const defineKey = { key, expireTime, sort: { _id: -1 } }
