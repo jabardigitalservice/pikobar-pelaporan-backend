@@ -60,9 +60,9 @@ const listExport = async (query, user, callback) => {
   try {
     if(query.search) searchParam = [ { file_name : new RegExp(query.search,"i") }]
     const page = parseInt(query.page) || 1
-    const limit = parseInt(query.limit) || 100
+    const limit = parseInt(query.limit) || 30
     const result = await LogQueue.find(filterLogQueue(user, query))
-    .or(searchParam).select(select).sort({ '_id' : -1 })
+    .or(searchParam).select(select).sort({ 'createdAt' : -1 })
     .limit(limit).skip((limit * page) - limit).lean()
     const count = await LogQueue.estimatedDocumentCount()
     const countPerPage = Math.ceil(count / limit)
