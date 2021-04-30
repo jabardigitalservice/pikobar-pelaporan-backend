@@ -1,11 +1,11 @@
 const filterLogQueue = (user, query) => {
   const { setDate } = require('../filter/date')
-  const params = {}
+  const param = {}
   if (query.status) param.job_status = query.status
   if(query.date) param.createdAt = setDate('createdAt', query.date, query.date).createdAt
-  params.author = user.id
+  param.author = user.id
 
-  return params
+  return param
 }
 module.exports = {
   filterLogQueue

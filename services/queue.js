@@ -64,12 +64,12 @@ const listExport = async (query, user, callback) => {
     const result = await LogQueue.find(filterLogQueue(user, query))
     .or(searchParam).select(select).sort({ 'createdAt' : -1 })
     .limit(limit).skip((limit * page) - limit).lean()
-    const count = await LogQueue.estimatedDocumentCount()
+    const count = await LogQueue.countDocuments()
     const countPerPage = Math.ceil(count / limit)
     const dataMapping = { result, page, countPerPage, count, limit }
     callback(null, jsonPagination('history', dataMapping))
   } catch (error) {
-    callback(error, nul)
+    callback(error, null)
   }
 }
 

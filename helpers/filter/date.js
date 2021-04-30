@@ -35,5 +35,5 @@ const oneDate = (query, columnDate) => {
 
 
 module.exports = {
-  dateFilter, oneDate
+  setDate, dateFilter, oneDate
 }

@@ -4,6 +4,7 @@ const sectionIdentity = (this_) => {
   let birthDate = this_.birth_date ? helpers.convertDate(this_.birth_date) : null
   let finals = helpers.patientStatus(this_.final_result)
   let criteria = helpers.criteriaConvert(this_.status)
+  const address = helpers.checkExistColumn(this_.address_street)
   return{
     "Nama Pasien": this_.name,
     "NIK": this_.nik,
@@ -18,7 +19,7 @@ const sectionIdentity = (this_) => {
     "Kota/Kab": this_.address_district_name,
     "Kecamatan": this_.address_subdistrict_name,
     "Kel/Desa": this_.address_village_name,
-    "Alamat Lengkap (RT/RW)": `${this_.address_street} (${this_.rt}/${this_.rw})`,
+    "Alamat Lengkap (RT/RW)": `${address} (${helpers.checkExistColumn(this_.rt)}/${ helpers.checkExistColumn(this_.rw)})`,
     "Pekerjaan": this_.occupation,
     "Alamat Kantor": this_.office_address,
     "Kewarganegaraan": this_.nationality === "WNI" ? "Indonesia" : this_.nationality_name,
