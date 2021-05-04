@@ -58,13 +58,16 @@ const historyExport = async (query, user, callback) => {
 
 const listExport = async (query, user, callback) => {
   try {
+    let searchParam = [{}];
     if(query.search) searchParam = [ { file_name : new RegExp(query.search,"i") }]
     const page = parseInt(query.page) || 1
     const limit = parseInt(query.limit) || 30
-    const result = await LogQueue.find(filterLogQueue(user, query))
+    const where = filterLogQueue(user, query)
+    const result = await LogQueue.find(where)
     .or(searchParam).select(select).sort({ 'createdAt' : -1 })
     .limit(limit).skip((limit * page) - limit).lean()
-    const count = await LogQueue.estimatedDocumentCount()
+    const filterCount = {...where, ...{ $or : searchParam } }
+    const count = await LogQueue.countDocuments(filterCount)
     const countPerPage = Math.ceil(count / limit)
     const dataMapping = { result, page, countPerPage, count, limit }
     callback(null, jsonPagination('history', dataMapping))
