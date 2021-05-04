@@ -1,5 +1,5 @@
-const { replyHelper, replyJson } = require('../helpers')
-
+const { constructErrorResponse, replyJson } = require('../helpers')
+const { VERIFIED_STATUS } = require('../../helpers/constant')
 function constructCasesResponse(cases) {
   let jsonCases = {
     status: 200,
@@ -40,7 +40,7 @@ module.exports = (server) => {
         author,
         request.pre,
         async (err, resultCase) => {
-          if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
+          if (err) return reply(constructErrorResponse(err)).code(422)
 
           server.methods.services.casesTransfers.processTransfer(
             request.params.transferId,
@@ -69,10 +69,10 @@ module.exports = (server) => {
       let author = request.auth.credentials.user
       server.methods.services.cases.update(id, pre, author, payload,
         async (err, resultCase) => {
-          if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
+          if (err) return reply(constructErrorResponse(err)).code(422)
           server.methods.services.histories.createIfChanged(Object.assign(payload, { case: id }),
             (err, result) => {
-              if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
+              if (err) return reply(constructErrorResponse(err)).code(422)
               server.methods.services.casesTransfers.processTransfer(
                 request.params.transferId,
                 pre.transfer_case.transfer_case_id,
@@ -131,9 +131,9 @@ module.exports = (server) => {
         request.auth.credentials.user,
         request.payload,
         (err, result) => {
-          if (err) return reply(replyHelper.constructErrorResponse(err)).code(422)
+          if (err) return reply(constructErrorResponse(err)).code(422)
 
-          if (request.params.action === 'approve') {
+          if (request.params.action === VERIFIED_STATUS.APPROVED) {
             const { _id, ...historyPayload } = result.transfer_last_history.toObject()
             let historiesPayload = Object.assign(historyPayload, {
               current_location_type: 'RS',

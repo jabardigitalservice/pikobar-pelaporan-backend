@@ -9,7 +9,10 @@ const { date } = require('joi');
 const UserSchema = new mongoose.Schema({
   fullname: String,
   username: {type: String, lowercase: true, unique: true, required: [true, "can't be blank"], match: [/^[a-zA-Z0-9]+$/, 'is invalid'], index: true},
-  email: {type: String, lowercase: true, unique: true, required: [true, "can't be blank"], match: [/\S+@\S+\.\S+/, 'is invalid'], index: true},
+  email: {
+    type: String, lowercase: true, unique: true, required: [true, "can't be blank"],
+    match: [/\S+@\S+\.\S+/, 'is invalid'], index: true,
+  },
   role: { type: String, lowercase: true, required: [true, "can't be blank"]},
   code_district_city: { type: String, default: null},
   name_district_city: { type: String, default: null},
@@ -107,5 +110,15 @@ UserSchema.methods.JSONCase = function () {
     name_district_city: this.name_district_city,
   }
 }
+
+UserSchema.post('findOneAndUpdate', function(error, doc, next) {
+  const { MONGO } = require('../helpers/constant')
+  if (error.name === 'MongoError' && error.code === MONGO.DUPLICATE_CODE_ERR) {
+    const email = error.keyValue.email
+    next(new Error(`Email ${email} telah digunakan, silahkan ubah alamat email anda!`))
+  } else {
+    next(error)
+  }
+})
 
 module.exports = mongoose.model('User', UserSchema)

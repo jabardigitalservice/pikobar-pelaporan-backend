@@ -1,13 +1,8 @@
-const mongoose = require('mongoose');
 const Case = require('../models/Case')
 const History = require('../models/History')
-require('../models/Rdt');
-const Rdt = mongoose.model('Rdt');
-require('../models/DistrictCity')
-const DistrictCity = mongoose.model('Districtcity')
-require('../models/RdtHistory')
-const RdtHistory = mongoose.model('RdtHistory');
-
+const Rdt = require('../models/Rdt')
+const DistrictCity = require('../models/DistrictCity')
+const RdtHistory = require('../models/RdtHistory')
 
 const lastHistory = async (query, callback) => {
   try {
@@ -36,6 +31,29 @@ const lastHistory = async (query, callback) => {
   }
 }
 
+const returnPayload = x => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(x)
+      resultForResnpose.push(x)
+    }, 100)
+  })
+}
+
+const getCountRdt = async (code) => {
+  try {
+    const checkDistrictDinkes = await DistrictCity.findOne({ kemendagri_kabupaten_kode: code }).lean()
+    const checkCodeTest = await Rdt.find({ address_district_code: code }).sort({ code_test: -1 }).lean()
+    let count = getLastRdtNumber(1, checkCodeTest, 10);
+    return {
+      prov_city_code: code,
+      dinkes_code: checkDistrictDinkes.dinkes_kota_kode,
+      count: count
+    }
+  } catch (error) {
+    return error.toString()
+  }
+}
 
 const injectRdt = async (request, callback) => {
   let payload = request.payload
@@ -95,53 +113,12 @@ const injectRdt = async (request, callback) => {
         })
       })
 
-
     }
-  }
-
-  const returnPayload = x => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(x)
-        resultForResnpose.push(x)
-      }, 100)
-    })
-  }
-
-  const getCountRdt = code => {
-    return new Promise((resolve, reject) => {
-      DistrictCity.findOne({ kemendagri_kabupaten_kode: code })
-        .exec()
-        .then(dinkes => {
-          Rdt.find({ address_district_code: code })
-            .sort({ code_test: -1 })
-            .exec()
-            .then(res => {
-
-              let count = 1;
-              if (res.length > 0) {
-                // ambil 5 karakter terakhir yg merupakan nomor urut dari id_rdt
-                let str = res[0].code_test
-                count = (Number(str.substring(10)) + 1)
-              }
-
-              let results = {
-                prov_city_code: code,
-                dinkes_code: dinkes.dinkes_kota_kode,
-                count: count
-              }
-
-              resolve(results)
-            }).catch(err => console.log(err))
-        })
-    })
   }
 
   process().then(() => {
     return callback(null, resultForResnpose)
   })
-
-
 }
 
 

@@ -4,6 +4,7 @@ const Helper = require('../helpers/custom')
 const { rollback } = require('../helpers/custom')
 const { CRITERIA } = require('../helpers/constant')
 const { getCountBasedOnDistrict } = require('../helpers/cases/global')
+const { closeContactsColumn, relatedCloseContactsColumn, lookupCases } = require('../utils')
 const {
   append,
   relatedPayload,
@@ -11,12 +12,7 @@ const {
 
 async function getByCase(pre, callback) {
   try {
-    const aggcase = [
-      {
-        $match: {
-          id_case: pre.id_case,
-        },
-      },
+    const aggcase = [{ $match: { id_case: pre.id_case }},
       {
         $addFields: {
           relatedCases: {
@@ -29,53 +25,16 @@ async function getByCase(pre, callback) {
       },
       { $unwind: "$relatedCases" },
       { $replaceRoot: { newRoot: "$relatedCases" } },
-      {
-        $lookup: {
-          from: "cases",
-          localField: "id_case",
-          foreignField: "id_case",
-          as: "case",
-        },
-      },
+      lookupCases('case'),
       { $unwind: "$case" },
-      {
-        $project: {
-          _id: "$case._id",
-          id_case: "$case.id_case",
-          name: "$case.name",
-          nik: "$case.nik",
-          phone_number: "$case.phone_number",
-          age: "$case.age",
-          birth_date: "$case.birth_date",
-          gender: "$case.gender",
-          status: "$case.status",
-          address_street: "$case.address_street",
-          address_district_name: "$case.address_district_name",
-          address_subdistrict_name: "$case.address_subdistrict_name",
-          address_village_name: "$case.address_village_name",
-          relation: 1,
-          relation_others: 1,
-          activity: 1,
-          activity_others: 1,
-          first_contact_date: 1,
-          last_contact_date: 1,
-          id_case_registrant: 1,
-          is_access_granted: 1,
-          is_reported: "$case.is_reported",
-          createdAt: 1,
-        },
-      },
+      { $project: closeContactsColumn},
     ]
 
-    const result = await Case
-      .aggregate(aggcase)
-      .sort({ createdAt: -1 })
-
+    const result = await Case.aggregate(aggcase).sort({ createdAt: -1 })
     callback(null, result)
   } catch (e) {
     callback(e, null)
   }
-
 }
 
 const create = async (services, pre, author, payload, callback) => {
@@ -163,55 +122,25 @@ const create = async (services, pre, author, payload, callback) => {
 async function detailCaseContact(thisCase, contactCase, callback) {
   try {
     const raw = await Case.aggregate([
-      {
-        $match: {
-          id_case: thisCase.id_case,
-        },
-      },
+      { $match: { id_case: thisCase.id_case } },
       {
         $addFields: {
           relatedCases: {
-            $concatArrays: [
-              "$close_contact_parents",
-              "$close_contact_childs",
-            ],
+            $concatArrays: [ "$close_contact_parents", "$close_contact_childs", ],
           },
         },
       },
       { $unwind: "$relatedCases" },
       { $replaceRoot: { newRoot: "$relatedCases" } },
       { $match: { id_case: contactCase.id_case } },
-      {
-        $lookup: {
-          from: "cases",
-          localField: "id_case",
-          foreignField: "id_case",
-          as: "relatedCase",
-        },
-      },
-      {
-        $project: {
-          relatedCase: {
-            close_contact_childs: 0,
-            close_contact_parents: 0,
-            createdAt: 0,
-            updatedAt: 0,
-            last_history: 0,
-            __v: 0,
-          },
-        }
-      },
+      lookupCases('relatedCase'),
+      { $project: relatedCloseContactsColumn },
       { $unwind: "$relatedCase" },
     ])
-
     // transform
     const detail = raw.shift()
     const { relatedCase, ...thisContactCase } = detail
-    const result = {
-      ...detail.relatedCase,
-      ...thisContactCase,
-    }
-
+    const result = { ...detail.relatedCase, ...thisContactCase }
     callback(null, result)
   } catch (e) {
     callback(e, null)

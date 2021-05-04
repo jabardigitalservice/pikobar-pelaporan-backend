@@ -9,6 +9,7 @@ const {
   case_has_been_verified,
   faskes_cases_created,
   faskes_cases_recreated,
+  integration_labkes_created,
 } = lang.titles
 
 const { KOTAKAB, FASKES } = ROLE
@@ -21,6 +22,7 @@ const {
 } = CLICK_ACTION
 
 const {
+  EVT_INTEGRATION_LABKES,
   EVT_CASE_CREATED,
   EVT_CASE_REVISED,
   EVT_CASE_VERIFIED,
@@ -44,7 +46,10 @@ const getMessagePayload = (event, data, author) => {
   let message, payload = {}
 
   switch (event) {
-    case eventName(FASKES, EVT_CASE_CREATED):
+    case eventName(FASKES, EVT_INTEGRATION_LABKES):
+      message = `Kasus DRAFT baru hasil uji lab atas nama ${data.name}`
+      payload = MessageNotification(integration_labkes_created, message, EVT_INTEGRATION_LABKES, ACT_CASES_VERIFICATION_LIST, ['none'], [data.author])
+    case eventName(FASKES, EVT_CASE_CREATED, FASKES, ):
       payload = getCaseCreatedPayload(author, data); break;
     case eventName(KOTAKAB, 'EVT_CASE_VERIFIED'):
       payload = MessageNotification(case_has_been_verified, `${case_has_been_verified} a/n Dummy`, KOTAKAB, EVT_CASE_VERIFIED, ACT_CASES_LIST, [FASKES], []); break;

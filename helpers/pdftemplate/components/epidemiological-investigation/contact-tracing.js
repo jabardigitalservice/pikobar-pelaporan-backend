@@ -8,6 +8,7 @@ const handleEmpty = v => v || '-'
 const objEmptyContactHistory = [
   { alignment: 'center', text: '- Tidak ada riwayat -', colSpan: 5 },{},{},{},{}
 ]
+const emptyHistory = [{ alignment: 'center', text: '- Tidak ada riwayat -', colSpan: 4 },{},{},{}]
 
 const objectTravelPlaces = (records, exception) => {
   const res = []
@@ -37,7 +38,7 @@ const buildTravelPlaces = (data, place, type) => {
   const records = data[place] || []
   const res = objectTravelPlaces(records, exception)
   if (!res.length) {
-    res.push([{ alignment: 'center', text: '- Tidak ada riwayat -', colSpan: 4 },{},{},{}])
+    res.push(emptyHistory)
   }
 
   return res
@@ -61,7 +62,7 @@ const objectResidence = (data) => {
 const buildResidences = (data) => {
   const res = objectResidence (data)
   if (!res.length) {
-    res.push([{ alignment: 'center', text: '- Tidak ada riwayat -', colSpan: 4 },{},{},{}])
+    res.push(emptyHistory)
   }
 
   return res

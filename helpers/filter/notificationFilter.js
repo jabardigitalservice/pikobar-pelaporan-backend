@@ -1,5 +1,5 @@
 const ObjectId = require('mongodb').ObjectID
-
+const { setDate } = require('../filter/date')
 const filterNotification = (query, userId) => {
   const params = {
     recipientId: ObjectId(userId)
@@ -14,10 +14,7 @@ const filterNotification = (query, userId) => {
   }
 
   if(query.startDate){
-    params.createdAt = {
-      "$gte": new Date(new Date(query.startDate)).setHours(00, 00, 00),
-      "$lt": new Date(new Date(query.startDate)).setHours(23, 59, 59)
-    }
+    param.createdAt = setDate('createdAt', query.startDate, query.startDate).createdAt
   }
 
   return params

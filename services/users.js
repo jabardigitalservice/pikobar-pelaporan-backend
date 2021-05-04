@@ -5,7 +5,7 @@ const User = mongoose.model('User');
 const Unit = mongoose.model('Unit');
 const ObjectId = require('mongodb').ObjectID;
 const UserDevice = require('../models/UserDevice');
-const paginate = require('../helpers/paginate');
+const { resultJson, optionsLabel } = require('../helpers/paginate');
 const custom = require('../helpers/custom');
 const filters = require('../helpers/filter/userfilter');
 
@@ -13,16 +13,12 @@ const listUser = async (user, query, callback) => {
   try {
     const sorts = (query.sort == "desc" ? { _id: "desc" } : JSON.parse(query.sort));
     const populate = (['unit_id']);
-    const options = paginate.optionsLabel(query, sorts, populate);
+    const options = optionsLabel(query, sorts, populate);
     const params = filters.filterUser(query, user);
     const search_params = filters.searchUser(query);
     const result = User.find(params).or(search_params).where("delete_status").ne("deleted");
     const paginateResult = await User.paginate(result, options);
-    const res = {
-      users: paginateResult.itemsList.map(users => users.toJSONFor()),
-      _meta: paginateResult._meta,
-    }
-    callback(null, res);
+    callback(null, resultJson('users', paginateResult));
   } catch (error) {
     callback(error, null);
   }

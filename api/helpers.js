@@ -70,11 +70,9 @@ function mongooseResponseValidationErrorHandler(err) {
 const errorHandlers = [joiResponseErrorHandler, mongooseResponseValidationErrorHandler, defaultResponseErrorHandler]
 
 const constructErrorResponse = (err) => {
-  var response
-  for (var handler in errorHandlers) {
-
+  let response
+  for (let handler in errorHandlers) {
     let handlerFn = errorHandlers[handler]
-
     if (typeof (handlerFn) === 'function') {
       response = handlerFn(err)
       if (response !== null) break
@@ -102,6 +100,11 @@ const customResponse = (status, message, result) => {
   return jsonOutput
 }
 
+const replyOnly = (err, result, reply) => {
+  if (err) return reply(constructErrorResponse(err)).code(422).takeover()
+  return reply(result)
+}
+
 const replyJson = (err, result, reply) => {
   if (err) return reply(constructErrorResponse(err)).code(422)
   return reply(
@@ -112,6 +115,6 @@ const replyJson = (err, result, reply) => {
 module.exports = {
   constructErrorResponse,
   CommentReferenceError,
-  successResponse,
+  successResponse, replyOnly,
   replyJson, customResponse
 }

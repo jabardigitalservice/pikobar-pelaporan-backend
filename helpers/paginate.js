@@ -18,4 +18,11 @@ const optionsLabel = (query, sorts, populate) => {
   return options
 };
 
-module.exports = { optionsLabel }
+const resultJson = (nameObject, result) => {
+  return {
+    [nameObject]: result.itemsList.map(row => row.toJSONFor()),
+     _meta: result._meta
+  }
+}
+
+module.exports = { optionsLabel, resultJson }

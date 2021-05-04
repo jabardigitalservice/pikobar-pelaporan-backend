@@ -7,6 +7,15 @@ const districtcities = {
   }
 }
 
+const villages =   {
+  $lookup: {
+    from: 'villages',
+    let: { code: '$current_location_village_code' },
+    pipeline: [{ $match: { $expr: { $eq: ['$kemendagri_desa_kode', '$$code'] } } }],
+    as: 'villages'
+  }
+}
+
 module.exports = {
-  districtcities
+  districtcities, villages
 }

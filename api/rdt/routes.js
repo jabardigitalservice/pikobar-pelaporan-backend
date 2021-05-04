@@ -40,8 +40,8 @@ module.exports = (server) => {
 
   return [
     route('GET', '/rdt', inputValidations.RdtQueryValidations, [CheckRoleView, checkIfDataNotNull], 'ListRdt'),
-    route('GET', '/rdt/list-idcase', inputValidations.rdtSearchValidation, [getDataExternal], 'GetListIdCase'),
-    route('GET', '/rdt/list-idcase-detail', null, [searchIdcasefromInternal, searchIdcasefromExternal], 'GetListIdCaseDetail'),
+    route('GET', '/rdt/list-idcase', inputValidations.rdtSearchValidation, [], 'GetListIdCase'),
+    route('GET', '/rdt/list-idcase-detail', null, [searchIdcasefromInternal], 'GetListIdCaseDetail'),
     route('GET', '/rdt/list-registered-user', null, [getRegisteredUserfromExternal], 'GetListRegisteredUser'),
     route('GET', '/rdt/list-location-test', null, [], 'formLocationTest'),
     route('POST', '/rdt', null, [CheckRoleCreate, countRdtCode, getCodeDinkes, cekHistoryCases, createHistoryWhenPositif], 'CreateRdt'),
@@ -50,11 +50,5 @@ module.exports = (server) => {
     route('GET', '/rdt/{id}/histories', null, [CheckRoleView], 'GetRdtHistories'),
     route('PUT', '/rdt/{id}', null, [CheckRoleUpdate], 'UpdateRdt'),
     route('DELETE', '/rdt/{id}', null, [CheckRoleDelete, getRdtbyId], 'DeleteRdt'),
-    route('GET', '/rdt/summary-by-cities', null, [], 'GetRdtSummaryByCities'),
-    route('GET', '/rdt/summary-result-by-cities', null, [CheckRoleView], 'GetRdtSummaryResultByCities'),
-    route('GET', '/rdt/summary-result-list-by-cities', null, [CheckRoleView], 'GetRdtSummaryResultListByCities'),
-    route('GET', '/rdt/faskes-summary-by-cities', null, [CheckRoleView], 'GetRdtFaskesSummaryByCities'),
-    route('POST', '/rdt/send-messages', null, [], 'sendMessage')
   ]
-
 }

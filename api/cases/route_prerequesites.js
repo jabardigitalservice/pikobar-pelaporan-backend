@@ -1,6 +1,16 @@
 const replyHelper = require('../helpers')
 const { conditionPreReq } = require('../../utils/conditional')
 
+const sameRequest = (server, request, reply, name) => {
+  if (request.route.method === 'put' && request.route.path === '/api/cases/{id}') {
+    if (!request.payload.address_district_code) return reply(false)
+  }
+
+  server.methods.services.cases[name](
+    request.payload.address_district_code,
+    (err, count) => replyHelper.replyOnly(err, count, reply)
+  )
+}
 const validationBeforeInput = server => {
     return {
         method: (request, reply) => {
@@ -49,45 +59,19 @@ const checkCaseIsExists = server => {
 }
 
 const countCaseByDistrict = server =>{
-    return {
-        method: (request, reply) => {
-            if (request.route.method === 'put' && request.route.path === '/api/cases/{id}') {
-                if (!request.payload.address_district_code)
-                    return reply()
-            }
-
-            server.methods.services.cases.getCountByDistrict(
-                request.payload.address_district_code,
-                (err, count) => {
-                    if (err) {
-                        return reply(replyHelper.constructErrorResponse(err)).code(422).takeover()
-                    }
-                    return reply(count)
-                })
-        },
-        assign: 'count_case'
-    }
+  return {
+    method: (request, reply) => {
+      sameRequest(server, request, reply, 'getCountByDistrict')
+    }, assign: 'count_case'
+  }
 }
 
 const countCasePendingByDistrict = server =>{
-    return {
-        method: (request, reply) => {
-            if (request.route.method === 'put' && request.route.path === '/api/cases/{id}') {
-                if (!request.payload.address_district_code)
-                    return reply()
-            }
-
-            server.methods.services.cases.getCountPendingByDistrict(
-                request.payload.address_district_code,
-                (err, count) => {
-                    if (err) {
-                        return reply(replyHelper.constructErrorResponse(err)).code(422).takeover()
-                    }
-                    return reply(count)
-                })
-        },
-        assign: 'count_case_pending'
-    }
+  return {
+    method: (request, reply) => {
+      sameRequest(server, request, reply, 'getCountPendingByDistrict')
+    },assign: 'count_case_pending'
+  }
 }
 
 const getCasebyId = server => {
@@ -147,34 +131,28 @@ const checkIfDataNotNull = server =>{
 }
 
 const getDetailCase = server => {
-    return {
-        method: (request, reply) => {
-            const id = request.params.id
-            server.methods.services.cases.getById(id, async (err, result) => {
-                if (err) {
-                    return reply(replyHelper.constructErrorResponse(err)).code(422).takeover()
-                }
+  return {
+    method: (request, reply) => {
+      const id = request.params.id
+      server.methods.services.cases.getById(id, async (err, result) => {
+        if (err) return reply(replyHelper.constructErrorResponse(err)).code(422).takeover()
+        if (result.verified_status === 'verified') {
+          return reply({
+            status: 422,
+            message: 'Case already verified!',
+            data: null
+          }).code(422).takeover()
+        }
 
-                if (result.verified_status === 'verified') {
-                    return reply({
-                        status: 422,
-                        message: 'Case already verified!',
-                        data: null
-                    }).code(422).takeover()
-                }
-
-                server.methods.services.cases.getCountByDistrict(
-                    result.address_district_code,
-                    async (err, count) => {
-                        if (err) {
-                            return reply(replyHelper.constructErrorResponse(err)).code(422).takeover()
-                        }
-
-                        return reply(Object.assign(result, count))
-                    })
-            })
-        },
-        assign: 'count_case'
+        server.methods.services.cases.getCountByDistrict(
+          result.address_district_code,
+          async (err, count) => {
+            if (err) return reply(replyHelper.constructErrorResponse(err)).code(422).takeover()
+            return reply(Object.assign(result, count))
+          })
+        })
+      },
+      assign: 'count_case'
     }
 }
 

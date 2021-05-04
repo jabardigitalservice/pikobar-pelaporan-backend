@@ -6,7 +6,7 @@ const jsonPagination = (name, data) => {
       currentPage: 1,
       page: data.page,
       limitPerPage: data.limit,
-      totalPages: Math.ceil(size / data.limit),
+      totalPages:  Math.ceil(size / data.limit),
       countPerPage: data.result.length,
       countTotal: data.count
     }

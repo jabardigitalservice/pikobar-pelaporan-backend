@@ -30,6 +30,12 @@ const getCountBasedOnDistrict = async (services, districtCode) => {
   return doc
 }
 
+const summaryCondition = (item, condition, result, param) => {
+  if (item['_id'] == condition) {
+    return result[param] = item['total']
+  }
+}
+
 module.exports = {
-  getCountBasedOnDistrict,
+  getCountBasedOnDistrict, summaryCondition
 }

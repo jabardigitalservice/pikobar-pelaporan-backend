@@ -1,6 +1,6 @@
-const Unit = require('../models/Unit');
-const paginate = require('../helpers/paginate');
-const custom = require('../helpers/custom');
+const Unit = require('../models/Unit')
+const paginate = require('../helpers/paginate')
+const custom = require('../helpers/custom')
 const { filterUnit, filterSearch } = require('../helpers/filter/unitfilter')
 
 const listUnit = async (query, callback) => {

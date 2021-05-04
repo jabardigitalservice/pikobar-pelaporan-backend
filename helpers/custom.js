@@ -50,9 +50,7 @@ function isEqual(a, b) {
 }
 
 const isDirty = (oldData, newData) => {
-  if (!oldData) {
-    return true
-  }
+  if (!oldData) return true
 
   let result = false
   let changed_props = [];
@@ -217,10 +215,33 @@ const ucwords = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
+const is_same = (a, b) => {
+  /* Method to compare equality between 2 object. support Date object,
+   * array, and generic object */
+  if (typeof a == 'undefined' || typeof b == 'undefined')
+    return false;
+  if (Array.isArray(a))
+    return JSON.stringify(a) == JSON.stringify(b);
+  if (typeof (a) == 'object')
+    return String(a) == String(b);
+  return a == b;
+}
+
+const checkProperty = (payload, new_history, old_history) => {
+  let changed = false
+  for (let property in payload) {
+    if (new_history[property] != null && !is_same(new_history[property], old_history[property])) {
+      changed = true
+    }
+  }
+
+  return changed
+}
+
 module.exports = {
   setPwd, deletedSave, isObject, deleteProps, jsonParse,
   convertDate, isDirty, patientStatus, criteriaConvert, convertYesOrNO,
   convertIncome, convertPysichal, checkDiagnosis,
   checkDiseases, checkExistColumn, rollback, locationPatient, yesOrNoBool,
-  dateReplace, ucwords,
+  dateReplace, ucwords, is_same, checkProperty
 }

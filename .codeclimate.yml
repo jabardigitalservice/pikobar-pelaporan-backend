@@ -18,3 +18,4 @@ checks:
 #         javascript:
 exclude_patterns:
 - node_modules/
+- test/

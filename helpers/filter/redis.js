@@ -6,7 +6,8 @@
  * @param {*} unique
  * @return {string}
  */
- const validateQueryDashboard = (user, query, unique) => {
+
+const validateQueryDashboard = (user, query, unique) => {
   const parseQuery = JSON.stringify(query) // parse query string nodejs to string
   const toJson = JSON.parse(parseQuery) // parse string to object
   let str = [] // define array
