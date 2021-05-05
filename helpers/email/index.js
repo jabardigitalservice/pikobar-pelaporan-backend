@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer')
-const { SUBJECT_NAME, TEXT_EMAIL } = require('../constant')
+const { SUBJECT_NAME, TEXT_CASE, TEXT_HISTORY, JOB } = require('../constant')
 const { updateLogJob } = require('../job/log')
 const fs = require('fs')
 
@@ -25,12 +25,17 @@ smtpTrans.verify(function(error, success) {
 });
 
 //Specify what the email will look like
-const optionsWithAttachment = (subject, attachments, email) => {
+const optionsWithAttachment = (subject, attachments, email, jobName) => {
+  let text
+  if (jobName === JOB.CASE) {
+    text = TEXT_CASE
+  } else {
+    text = TEXT_HISTORY
+  }
 	return {
     from: process.env.EMAIL_FROM,
 	  to: email,
-	  subject, attachments,
-    text: TEXT_EMAIL
+	  subject, attachments, text
   }
 }
 
@@ -51,12 +56,11 @@ const condition = async (err, path, jobId) => {
   }
 }
 
-const sendEmailWithAttachment = (subject, attachments, email, path, jobId) => {
-  smtpTrans.sendMail(optionsWithAttachment(subject, attachments, email), async (err, res) => {
+const sendEmailWithAttachment = (subject, attachments, email, path, jobId, jobName) => {
+  smtpTrans.sendMail(optionsWithAttachment(subject, attachments, email, jobName), async (err, res) => {
     await condition(err, path, jobId)
   })
 }
-
 
 module.exports = {
   sendEmailWithAttachment

@@ -206,7 +206,8 @@ module.exports = {
     HISTORY: 'queue-export-histories'
   },
   SUBJECT_NAME:'Aplikasi Pelaporan Kasus Pikobar',
-  TEXT_EMAIL:'Berikut Adalah Data Excell Hasil Export Dari Aplikasi Pelaporan Kasus Pikobar',
+  TEXT_CASE:'Berikut merupakan Data Pasien Aplikasi Pelaporan Kasus Pikobar',
+  TEXT_HISTORY:'Berikut merupakan Data Informasi Klinis Aplikasi Pelaporan Kasus Pikobar',
   JOB:{
     CASE: 'job-export-cases',
     HISTORY: 'job-export-histories'
