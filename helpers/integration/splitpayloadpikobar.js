@@ -10,7 +10,7 @@ const PayloadLaporMandri = (data) => {
   return Obj
 }
 
-const splitPayload1 = (patient) =>{
+const splitPayloadOne = (patient) =>{
   const Obj = {
     status: patient.status,
     there_are_symptoms: patient.there_are_symptoms,
@@ -34,7 +34,7 @@ const splitPayload1 = (patient) =>{
   return Obj
 }
 
-const splitPayload2 = (patient) =>{
+const splitPayloadTwo = (patient) =>{
   let Obj = {
     nik:patient.case,
     phone_number:patient.phone_number,
@@ -60,7 +60,7 @@ const splitPayload2 = (patient) =>{
   return Obj
 }
 
-const splitPayload3 = (patient) => {
+const splitPayloadThree = (patient) => {
   let Obj =  {
     current_location_type : patient.current_location_type,
     current_hospital_id : patient.current_hospital_id,
@@ -83,7 +83,7 @@ const splitPayload3 = (patient) => {
 
 module.exports = {
   PayloadLaporMandri,
-  splitPayload1,
-  splitPayload2,
-  splitPayload3
+  splitPayloadOne,
+  splitPayloadTwo,
+  splitPayloadThree
 }

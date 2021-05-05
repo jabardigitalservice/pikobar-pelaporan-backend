@@ -29,8 +29,8 @@ const register = (server, options, next) => {
     require('./inspection_support'),
     require('./search'),
     require('./cases_other'),
+    require('./integration'),
     require('./queue'),
-    require('./integration')
   );
   server.method(services)
   return next()

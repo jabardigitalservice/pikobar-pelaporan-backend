@@ -2,7 +2,7 @@ const ObjectId = require('mongoose').Types.ObjectId
 const User = require('../../models/User')
 const History = require('../../models/History')
 const LogSelfReport = require('../../models/LogSelfReport')
-const {PayloadLaporMandri, splitPayload1, splitPayload2, splitPayload3} = require('./splitpayloadpikobar')
+const {PayloadLaporMandri, splitPayloadOne, splitPayloadTwo, splitPayloadThree} = require('./splitpayloadpikobar')
 const {mergerPayloadlabkes, mergeSplitPayload} = require('./splitpayloadlabkes')
 const {PUBSUB, ROLE} = require('../constant')
 
@@ -114,9 +114,9 @@ const transformDataPayload = (data, patient) => {
 
   const transform = {
     ...PayloadLaporMandri(data),
-    ...splitPayload1(patient),
-    ...splitPayload2(patient),
-    ...splitPayload3(patient)
+    ...splitPayloadOne(patient),
+    ...splitPayloadTwo(patient),
+    ...splitPayloadThree(patient)
   }
 
   ifActionEdit(data, patient, transform)
