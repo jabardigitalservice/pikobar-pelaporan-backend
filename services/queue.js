@@ -13,7 +13,6 @@ const { sendEmailWithAttachment } = require('../helpers/email')
 const select = [
   'email','createdAt', 'job_id', 'job_name', 'job_status', 'job_progress', 'file_name'
 ]
-let searchParam = [{}]
 
 const mapingResult = (result) => {
   const data = {}
@@ -31,8 +30,8 @@ const sameCondition = async (query, user, queue, job, method, name, time, callba
     const batchId = require('uuid').v4()
     const result = await createQueue(queue, job, batchId)
     //save user and status job
-    await createLogJob(10, batchId, job, queue, query, user)
     await User.findByIdAndUpdate(user.id, { $set: { email: query.email } })
+    await createLogJob(10, batchId, job, queue, query, user)
     const data = mapingResult(result)
 
     const message = `Data${name}Kasus Pikobar Pelaporan : ${user.fullname}`

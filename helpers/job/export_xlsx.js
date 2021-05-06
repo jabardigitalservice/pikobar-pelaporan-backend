@@ -33,14 +33,14 @@ const sameCondition = async (query, user, method, allow, mapingData, name, path,
 const jobCaseExport = async (query, user, jobId) => {
   return await sameCondition(
     query, user, sqlCaseExport, false, excellOutput,
-    'Data-Kasus', 'cases', jobId
+    'Data-Pasien', 'cases', jobId
   )
 }
 
 const jobHistoryExport = async (query, user, jobId) => {
   return await sameCondition(
     query, user, sqlHistoriesExport, true, excellHistories,
-    'Data-Riwayat-Kasus', 'histories', jobId
+    'Data-Riwayat-Klinis', 'histories', jobId
   )
 }
 
