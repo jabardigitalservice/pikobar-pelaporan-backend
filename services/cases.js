@@ -1,15 +1,12 @@
 const Case = require('../models/Case');
-const Unit =require('../models/Unit')
 const History = require('../models/History')
 const User = require('../models/User')
-const Notification = require('../models/Notification')
 const DistrictCity = require('../models/DistrictCity')
 const Check = require('../helpers/rolecheck')
 const { notify } = require('../helpers/notification')
 const Filter = require('../helpers/filter/casefilter')
 const CloseContact = require('../models/CloseContact')
 const { doUpdateEmbeddedClosecontactDoc } = require('../helpers/cases/setters')
-const { sqlCondition, excellOutput } = require('../helpers/filter/exportfilter')
 const { CRITERIA, WHERE_GLOBAL } = require('../helpers/constant')
 const { summaryCondition } = require('../helpers/cases/global')
 const moment = require('moment')
@@ -129,22 +126,6 @@ async function ListCase (query, user, callback) {
   }).catch(err => callback(err, null))
 }
 
-const listCaseExport = async (query, user, callback) => {
-  const filter = await Filter.filterCase(user, query)
-  const filterRole = Check.exportByRole({}, user, query)
-  const params = { ...filter, ...filterRole, ...WHERE_GLOBAL }
-  const { searchExport } = require('../helpers/filter/search')
-  const search = searchExport(query)
-  params.last_history = { $exists: true, $ne: null }
-  const condition = sqlCondition(params, search, query)
-  try {
-    const resultExport = await Case.aggregate(condition).allowDiskUse(true)
-    callback (null, resultExport.map(cases => excellOutput(cases)))
-  } catch (error) {
-    callback(error, null)
-  }
-}
-
 function getCaseById (id, callback) {
   Case.findOne({_id: id})
     .populate('author')
@@ -183,7 +164,7 @@ function getIdCase (query,callback) {
 async function getCaseSummary(query, user, callback) {
   try {
     clientConfig.get(`summary-cases-list-${user.username}`, async (err, result) => {
-      const caseAuthors = await thisUnitCaseAuthors(user)
+      const caseAuthors = await Check.thisUnitCaseAuthors(user)
       const scope = Check.countByRole(user, caseAuthors)
       const filter = await Filter.filterCase(user, query)
       const searching = Object.assign(scope, filter)
@@ -219,7 +200,7 @@ async function getCaseSummary(query, user, callback) {
 
 async function getCaseSummaryVerification (query, user, callback) {
   // Temporary calculation method for faskes as long as the user unit has not been mapped, todo: using lookup
-  const caseAuthors = await thisUnitCaseAuthors(user)
+  const caseAuthors = await Check.thisUnitCaseAuthors(user)
   const searchByRole = Check.countByRole(user,caseAuthors);
   const filterSearch = await Filter.filterCase(user, query)
   const searching = {...searchByRole, ...filterSearch}
@@ -479,15 +460,6 @@ async function epidemiologicalInvestigationForm (detailCase, callback) {
   return callback(null, pdfmaker.epidemiologicalInvestigationsForm(detailCase))
 }
 
-async function thisUnitCaseAuthors (user) {
-  let caseAuthors = []
-  if (user.role === "faskes" && user.unit_id) {
-    caseAuthors = await User.find({unit_id: user.unit_id._id, role: 'faskes'}).select('_id')
-    caseAuthors = caseAuthors.map(obj => obj._id)
-  }
-  return caseAuthors
-}
-
 module.exports = [
   {
     name: 'services.cases.list',
@@ -532,10 +504,6 @@ module.exports = [
   {
     name: 'services.cases.softDeleteCase',
     method: softDeleteCase
-  },
-  {
-    name: 'services.cases.listCaseExport',
-    method: listCaseExport
   },
   {
     name: 'services.cases.getIdCase',

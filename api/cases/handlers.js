@@ -110,23 +110,6 @@ module.exports = (server) => {
       )
     },
     /**
-     * GET /api/cases
-     * @param {*} request
-     * @param {*} reply
-     */
-    async ListCaseExport(request, reply) {
-      const query = request.query
-      const { user } = request.auth.credentials
-      const fullName = request.auth.credentials.user.fullname.replace(/\s/g, '-')
-      server.methods.services.cases.listCaseExport(
-        query, user,
-        (err, result) => {
-          if (err) return reply(constructErrorResponse(err)).code(422)
-          const title = `Data-Kasus-`
-          return generateExcell(result, title, fullName, reply)
-        })
-    },
-    /**
      * GET /api/cases-listid
      * @param {*} request
      * @param {*} reply

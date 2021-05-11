@@ -64,8 +64,6 @@ module.exports = (server) => {
     routeWithPreOld(server, 'GET', '/cases-summary', 'cases', CheckRoleView, 'GetCaseSummary'),
     // Get case's summary of last status
     routeWithPreOld(server, 'GET', '/cases-summary-by-district', 'cases', CheckRoleView, 'GetCaseSummaryByDistrict'),
-    // Export excell case
-    routeWithPreOld(server, 'GET', '/cases-export', 'cases', CheckRoleView, 'ListCaseExport'),
     // Update case
     {
       method: 'PUT',
