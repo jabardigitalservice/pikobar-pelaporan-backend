@@ -1,6 +1,6 @@
 const json2xls = require('json2xls')
 const moment = require('moment')
-const { createLogStatus } = require('../job/log')
+const { updateLogJob } = require('../job/log')
 const { uploadFileToAwsBucket } = require('../../config/aws')
 const fs = require('fs')
 
@@ -27,17 +27,10 @@ const generateExcellPath = async (data, title, fullName, pathFolder, jobId) => {
     }
     fs.writeFileSync(path, jsonXls, 'binary')
     uploadFileToAwsBucket(fileName, fs.createReadStream(path), bucketName)
-    const set = { 'message.generate': 'Upload succes',
-      file_name: fileName, path:bucketName, 'job_progress': 50
-    }
-    await createLogStatus(jobId, set)
+    await updateLogJob(jobId, { file_name: fileName, path:bucketName })
     return { filename: fileName, path, data: jsonXls }
   } catch (error) {
     console.info(error)
-    const set = { 'message.generate':  error.toString(),
-      file_name: fileName, path:bucketName, 'job_progress': 50
-    }
-    await createLogStatus(jobId, set)
     return error
   }
 }

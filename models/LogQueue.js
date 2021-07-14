@@ -13,11 +13,8 @@ const LogQueueSchema = new mongoose.Schema({
   email: { type: String, index: true, default: null },
   file_name: { type: String, index: true, default: null },
   path: { type: String, index: true, default: null },
-  message: {
-    job: { type: String, index: true, default: null },
-    email: { type: String, index: true, default: null } ,
-    generate: { type: String, index: true, default: null },
-  },
+  type: { type: String, index: true, default: null },
+  message: { type: String, index: true, default: null },
   history: [{
     email: { type: String, index: true, default: null },
     sendAt: { type: Date, index: true, default: Date.now} ,

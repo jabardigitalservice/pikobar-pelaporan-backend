@@ -41,22 +41,14 @@ const createHistoryEmail = async (payload, jobId) => {
       { "job_id": jobId }, { $addToSet: addToSet }, { new: true }
     )
   } catch (error) {
-    console.info(error)
-    return error
-  }
-}
-
-const createLogStatus = async (jobId, set) => {
-  try {
-    return await LogQueue.updateOne(
-      { 'job_id': jobId }, { $set: set }, { new: true }
+    payload.status = "Error"
+    payload.message = error.toString()
+    await LogQueue.updateOne(
+      { "job_id": jobId }, { $addToSet: addToSet }, { new: true }
     )
-  } catch (error) {
-    console.info(error)
-    return error
   }
 }
 
 module.exports = {
-  createLogJob, updateLogJob, createHistoryEmail, createLogStatus
+  createLogJob, updateLogJob, createHistoryEmail
 }
