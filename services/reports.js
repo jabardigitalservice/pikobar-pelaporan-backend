@@ -18,7 +18,7 @@ async function dailyReport(query, user, callback) {
   }
   const searching = { ...Check.countByRole(user), ...await filterCase(user, query) }
   const aggQueryCase = aggCaseDailyReport(searching, dates)
-  const expireTime = 10 * 60 // 10 minute expire
+  const expireTime = 15 * 60 * 1000 // 15 minute expire
   const key = setKeyReport(query, user)
   try {
     clientConfig.get(key, async (err, result) => {
