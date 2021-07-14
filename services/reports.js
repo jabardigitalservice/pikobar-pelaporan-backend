@@ -28,7 +28,6 @@ async function dailyReport(query, user, callback) {
       }else{
         const caseReport = await Case.aggregate(aggQueryCase)
         const res = caseReport.shift()
-        res.date_version = new Date().toISOString()
         clientConfig.setex(key, expireTime, JSON.stringify(res)) // set redis key
         console.info(`api source ${key}`)
         callback(null, res)
